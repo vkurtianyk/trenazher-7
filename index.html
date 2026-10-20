@@ -476,6 +476,58 @@ GEN.t7 = lvl => {
     hint: 'Розкрий кожні дужки окремо, потім зведи подібні.' };
 };
 
+// T8 — рівняння, що зводяться до лінійних (корінь r задаємо наперед)
+function eqTask(L, R, r, viz, sq) {
+  const l = parse(L), rp = parse(R), co = (p, k) => p.get(k) || 0;
+  const a = co(l, 'x1') - co(rp, 'x1'), c = co(rp, '') - co(l, ''), steps = [];
+  if (/\(/.test(L + R)) steps.push(`Розкриваємо дужки${sq ? ' (x² взаємно знищуються)' : ''} і зводимо подібні: ${fmt(l)} = ${fmt(rp)}`);
+  if (co(rp, 'x1') || co(l, '')) {
+    const lt = [[co(l, 'x1'), { x: 1 }], [-co(rp, 'x1'), { x: 1 }]].filter(t => t[0]), rt = [[co(rp, ''), {}], [-co(l, ''), {}]].filter(t => t[0]);
+    steps.push(`Члени з x — вліво, числа — вправо, змінюючи знак: ${pretty(poly(lt))} = ${pretty(poly(rt))}`);
+    steps.push(`Зводимо: ${P(a + 'x')} = ${sn(c)}`);
+  }
+  steps.push(a === 1 ? `x = <b>${sn(r)}</b>` : `x = ${sn(c)} : ${pn(a)} = <b>${sn(r)}</b>`);
+  steps.push(`Перевірка: підставляємо x = ${pn(r)} — ліва і права частини рівні ✔`);
+  return { q: `Розв’яжіть рівняння: <b>${pretty(L)} = ${pretty(R)}</b>`, type: 'num', ans: r, steps, viz: viz || '',
+    hint: 'Розкрий дужки → члени з x вліво, числа вправо (зі зміною знаку!) → зведи подібні → поділи на коефіцієнт при x.' };
+}
+GEN.t8 = lvl => {
+  const r = nz(-9, 9), k = ri(1, 3), X = c => [c, { x: 1 }], N = c => [c, {}];
+  const big = () => { let a; do { a = nz(-9, 9); } while (Math.abs(a) < 2); return a; };
+  if (lvl === 1) {
+    if (k === 1) { const a = nz(-9, 9), b = nz(-9, 9); return eqTask(poly([X(a), N(b)]), String(a * r + b), r); }
+    if (k === 2) { const a = ri(2, 6), b = nz(-9, 9); return eqTask(`${a}(${poly([X(1), N(b)])})`, String(a * (r + b)), r, arrowsHTML([{ k: N(a), p: [X(1), N(b)] }])); }
+    const a = big(); return eqTask(poly([X(a)]), String(a * r), r);
+  }
+  if (lvl === 2) {
+    if (k === 1) {
+      let a, c; do { a = nz(-9, 9); c = nz(-9, 9); } while (a === c);
+      const b = nz(-9, 9), d = (a - c) * r + b, Lt = [X(a), N(b)], Rt = [X(c), N(d)].filter(t => t[0]);
+      return eqTask(poly(Lt), poly(Rt), r, likeHTML([{ op: '', br: 0, terms: Lt }, { op: ' = ', br: 0, terms: Rt }]));
+    }
+    if (k === 2) {
+      const neg = pick([true, false]), b = nz(-9, 9), d = nz(-9, 9); let a, c; do { a = ri(2, 7); c = ri(2, 5); } while (neg && a === c);
+      const L = `${a}(${poly([X(1), N(b)])})${neg ? '-' : '+'}${c}(${poly([X(1), N(d)])})`;
+      return eqTask(L, String(a * (r + b) + (neg ? -c : c) * (r + d)), r, arrowsHTML([{ k: N(a), p: [X(1), N(b)] }, { neg, k: N(c), p: [X(1), N(d)] }]));
+    }
+    let a, c; do { a = nz(-9, 9); c = nz(-9, 9); } while (a === c);
+    const b = nz(-9, 9), d = nz(-9, 9), A = [X(a), N(b)], B = [X(c), N(d)];
+    return eqTask(`(${poly(A)})-(${poly(B)})`, String((a - c) * r + b - d), r, likeHTML([{ op: '', br: 1, terms: A }, { op: ' − ', br: 1, terms: B }]));
+  }
+  if (k === 1) {
+    let m, p, a, b; do { m = ri(1, 4); p = ri(1, 4); a = nz(-6, 6); b = nz(-6, 6); } while (m * a === p * b);
+    const P1 = [X(p), N(a)], P2 = [X(m), N(b)];
+    return eqTask(`${ms(X(m))}(${poly(P1)})-${ms(X(p))}(${poly(P2)})`, String((m * a - p * b) * r), r, arrowsHTML([{ k: X(m), p: P1 }, { neg: true, k: X(p), p: P2 }]), 1);
+  }
+  if (k === 2) {
+    const q = ri(1, 3); let a, c; do { a = nz(-9, 9); c = nz(-9, 9); } while (a === c);
+    const b = nz(-9, 9), d = nz(-9, 9), A = [[q, { x: 2 }], X(a), N(b)], B = [[q, { x: 2 }], X(c), N(d)];
+    return eqTask(`(${poly(A)})-(${poly(B)})`, String((a - c) * r + b - d), r, likeHTML([{ op: '', br: 1, terms: A }, { op: ' − ', br: 1, terms: B }]), 1);
+  }
+  const m = ri(2, 5), a = nz(-6, 6);
+  return eqTask(`${ms(X(m))}(${poly([X(1), N(a)])})-${ms([m, { x: 2 }])}`, String(m * a * r), r, arrowsHTML([{ k: X(m), p: [X(1), N(a)] }]), 1);
+};
+
 // ===== Теми і пояснення =====
 const TOPICS = [
  { id: 't1', title: 'Степінь числа', sub: 'aⁿ, знак степеня, порядок дій', theory: `
@@ -536,7 +588,19 @@ const TOPICS = [
   <h4>Спрощення виразів</h4><p>Розкриваємо всі дужки, потім зводимо подібні:</p>
   ${arrowsHTML([{ k: [4, { y: 1 }], p: [[1, { y: 1 }], [-2, {}]] }, { neg: true, k: [1, { y: 1 }], p: [[3, { y: 1 }], [1, {}]] }], 1)}
   <p>Зводимо подібні: 4y² − 3y² = y², &nbsp; −8y − y = −9y. Відповідь: <b>y² − 9y</b></p>
-  <p class="warn">Типова помилка: 2x(x − 3) = 2x² − 3. Забули помножити на 2x друге число: правильно 2x² − 6x.</p>` }
+  <p class="warn">Типова помилка: 2x(x − 3) = 2x² − 3. Забули помножити на 2x друге число: правильно 2x² − 6x.</p>` },
+ { id: 't8', title: 'Рівняння', sub: 'дужки, перенесення, корінь', theory: `
+  <p><b>Рівняння</b> — рівність з невідомим x. <b>Корінь</b> — число, яке робить рівність правильною.</p>
+  <p class="big">2x + 3 = 11 &nbsp;→&nbsp; x = 4</p><p>Перевірка: 2 · 4 + 3 = 11 ✔</p>
+  <h4>План розв’язання</h4>
+  <ol><li>Розкрити дужки.</li><li>Члени з x перенести вліво, числа — вправо. <b>Переносимо через «=» — змінюємо знак!</b></li><li>Звести подібні: вийде ax = b.</li><li>Поділити на коефіцієнт: x = b : a.</li></ol>
+  <h4>Приклад з дужками: 2(x − 3) = x + 4</h4>
+  ${arrowsHTML([{ k: [2, {}], p: [[1, { x: 1 }], [-3, {}]] }], 1)}
+  <p>2x − 6 = x + 4 &nbsp;→&nbsp; 2x − x = 4 + 6 &nbsp;→&nbsp; <b>x = 10</b></p>
+  <h4>Коли x² зникає: x(x + 5) − x(x − 3) = 16</h4>
+  ${arrowsHTML([{ k: [1, { x: 1 }], p: [[1, { x: 1 }], [5, {}]] }, { neg: true, k: [1, { x: 1 }], p: [[1, { x: 1 }], [-3, {}]] }], 1)}
+  <p>x² − x² = 0, лишається 5x + 3x = 16 &nbsp;→&nbsp; 8x = 16 &nbsp;→&nbsp; <b>x = 2</b></p>
+  <p class="warn">Типова помилка: перенесли число і забули змінити знак. x + 5 = 9 → x = 9 + 5? Ні! x = 9 − 5 = 4.</p>` }
 ];
 
 // ===== Стан і UI =====
