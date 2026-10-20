@@ -34,6 +34,17 @@ table.rules{border-collapse:collapse;width:100%;margin:.5em 0}table.rules td{bor
 .good{color:var(--ok);font-weight:700;font-size:1.15em;margin:.6em 0}
 .bad{color:var(--bad);margin:.6em 0}.hint{background:#fff8e1;border-radius:10px;padding:.5em .8em;margin:.6em 0}
 .sol{background:#eefbf2;border-radius:10px;padding:.5em .9em;margin:.6em 0}
+.c0{color:#e11d48}.c1{color:#2563eb}.c2{color:#16a34a}.c3{color:#9333ea}
+.u0,.u1,.u2,.u3{text-underline-offset:5px;text-decoration-thickness:2px;text-decoration-line:underline}.u1{text-decoration-style:double}.u2{text-decoration-style:wavy}.u3{text-decoration-style:dotted}
+.viz{background:#fff;border:2px solid #eeeaf6;border-radius:12px;padding:10px 12px;margin:.6em 0;color:var(--ink)}
+.ex{position:relative;font-size:1.3em;font-weight:700;padding-top:66px;white-space:nowrap;overflow-x:auto}
+.ex svg{position:absolute;left:0;top:0;width:1px;height:1px;overflow:visible;pointer-events:none}
+.ar{opacity:0;transition:opacity .4s}.ar.on{opacity:1}.res{font-size:1.3em;font-weight:700}
+.ex2{font-size:1.3em;font-weight:700;line-height:2}
+.grp{display:flex;flex-wrap:wrap;align-items:center;gap:4px;margin:4px 0}
+.cube{display:inline-grid;place-items:center;width:1.8em;height:1.8em;border-radius:6px;font-weight:700;background:#e8e7ff;color:#4f46e5;border:2px solid #c7c4f5}
+.cube.k1{background:#fff1e0;color:#c2410c;border-color:#fbd5a8}.cube.out{opacity:.35;text-decoration:line-through}
+.frac{display:inline-flex;flex-direction:column}.frac>.grp+.grp{border-top:3px solid var(--ink);padding-top:4px}
 @media(max-width:520px){body{font-size:16px}.q{font-size:1.2em}}
 </style></head><body><div id="app"></div>
 <script>// ===== Алгебраїчний рушій: многочлени з цілими коефіцієнтами =====
@@ -230,6 +241,57 @@ function likeSteps(terms) {
   });
 }
 
+// ===== Наочність: стрілочки, кольори подібних, кубики =====
+const COLS = ['#e11d48', '#2563eb', '#16a34a', '#9333ea'];
+// член у <span>, а пробіли перед знаком — зовні
+function tspan(m, attrs) { const s = m.match(/^ */)[0]; return `${s}<span ${attrs}>${m.slice(s.length)}</span>`; }
+
+// Стрілочки «що на що множити»: groups = [{ neg, k, p }]; demo — покроково з відповіддю
+function arrowsHTML(groups, demo) {
+  let ci = 0; const items = [];
+  const ex = groups.map((g, gi) => (gi ? (g.neg ? ' − ' : ' + ') : '') + `<span class="ak" data-g="${gi}">${fmtMono(mkey(g.k[1]), g.k[0], true)}</span>(` +
+    g.p.map((t, i) => {
+      const c = ci++ % 4, r = tmul(g.k, t);
+      items.push(demo ? tspan(fmtMono(mkey(r[1]), g.neg ? -r[0] : r[0], !items.length), `class="ar c${c}"`) : `<span class="c${c}">${pretty(mp(g.k))} · ${pretty(mp(t))}</span>`);
+      return tspan(fmtMono(mkey(t[1]), t[0], i === 0), `class="at c${c}" data-g="${gi}"`);
+    }).join('') + ')').join('');
+  return `<div class="viz arcs" data-s="0" data-n="${items.length}"><div class="ex">${ex}</div>` +
+    (demo ? `<div class="res">= ${items.join('')}</div><button class="go" onclick="stepArcs(this)">Далі →</button>` : `<div class="cnt">Помнож по стрілочках: ${items.join('; &nbsp; ')}</div>`) + '</div>';
+}
+function drawArcs(root, upto) {
+  const ex = root.querySelector('.ex'), b = ex.getBoundingClientRect(), svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg'), lvl = {};
+  let h = '<defs>' + COLS.map((c, i) => `<marker id="m${i}" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0L10,5L0,10z" fill="${c}"/></marker>`).join('') + '</defs>';
+  [...ex.querySelectorAll('.at')].slice(0, upto).forEach((t, n) => {
+    const g = t.dataset.g, k = ex.querySelector(`.ak[data-g="${g}"]`).getBoundingClientRect(), r = t.getBoundingClientRect();
+    const x1 = k.left + k.width / 2 - b.left + ex.scrollLeft, x2 = r.left + r.width / 2 - b.left + ex.scrollLeft, y = k.top - b.top - 2, up = 8 + (lvl[g] = (lvl[g] || 0) + 1) * 16;
+    h += `<path d="M${x1},${y} C${x1},${y - up} ${x2},${y - up} ${x2},${y}" fill="none" stroke="${COLS[n % 4]}" stroke-width="3" marker-end="url(#m${n % 4})"/>`;
+  });
+  ex.querySelector('svg')?.remove(); svg.innerHTML = h; ex.appendChild(svg);
+  root.querySelectorAll('.ar').forEach((r, i) => r.classList.toggle('on', i < upto));
+}
+function stepArcs(btn) { const r = btn.closest('.arcs'), s = +r.dataset.s + 1; r.dataset.s = s; drawArcs(r, s); if (s >= +r.dataset.n) btn.remove(); }
+
+// Подібні члени одним кольором і однаковим підкресленням: groups = [{ op, br, terms }]
+function likeHTML(groups) {
+  const keys = [...new Set(groups.flatMap(g => g.terms.map(t => mkey(t[1]))))], j = t => keys.indexOf(mkey(t[1])) % 4;
+  const ex = groups.map(g => g.op + (g.br ? '(' : '') + g.terms.map((t, i) => tspan(fmtMono(mkey(t[1]), t[0], i === 0), `class="c${j(t)} u${j(t)}"`)).join('') + (g.br ? ')' : '')).join('');
+  const legend = keys.map((k, i) => `<span class="c${i % 4} u${i % 4}">${k ? fmtMono(k, 1, true) : 'числа'}</span>`).join(' &nbsp; ');
+  return `<div class="viz"><div class="ex2">${ex}</div><div class="cnt">Однаковий колір і підкреслення — подібні члени: ${legend}</div></div>`;
+}
+
+// Кубики-множники для властивостей степеня: op '*' | '/' | '^'; demo — з кнопкою і відповіддю
+function cubesHTML(op, x, a, b, demo) {
+  const row = (n, cls) => Array(n).fill(`<span class="cube ${cls}">${x}</span>`).join('');
+  const q = op === '*' ? `${x}${sup(a)} · ${x}${sup(b)}` : op === '/' ? `${x}${sup(a)} : ${x}${sup(b)}` : `(${x}${sup(a)})${sup(b)}`;
+  const e = op === '*' ? a + b : op === '/' ? a - b : a * b;
+  const pic = op === '*' ? `<div class="grp">${row(a, '')}${row(b, 'k1')}</div>`
+    : op === '/' ? `<div class="frac"><div class="grp">${row(b, 'out')}${row(a - b, '')}</div><div class="grp">${row(b, 'k1 out')}</div></div>`
+    : `<div class="grp">${Array(b).fill(`(${row(a, '')})`).join(' · ')}</div>`;
+  const why = op === '*' ? `${a} + ${b} = ${mult(e)} ${x}` : op === '/' ? `Верхні й нижні множники скорочуються попарно: ${a} − ${b} = ${e}` : `${b} групи по ${a}: ${a} · ${b} = ${mult(e)} ${x}`;
+  if (!demo) return `<div class="viz">${pic}<div class="cnt">Порахуй кубики-множники ${x}</div></div>`;
+  return `<div class="viz"><div class="ex2">${q}</div><div hidden>${pic}<div class="cnt">${why}</div><div class="ex2">= ${x}${sup(e)}</div></div><button class="go" onclick="this.previousElementSibling.hidden = false; this.remove()">Розкласти на множники</button></div>`;
+}
+
 // ===== Генератори =====
 const GEN = {};
 // T1 — степінь з натуральним показником
@@ -303,16 +365,16 @@ GEN.t2 = lvl => {
     return { q: `Піднесіть до степеня: <b>(${pretty(ms(t))})${sup(n)}</b>`, type: 'expr', std: 1, ans: ms(r), steps: [...powSteps(t, n), `Відповідь: <b>${mf(r)}</b>`], hint: '(ab)ⁿ = aⁿbⁿ — і число теж підносимо до степеня!' };
   }
   const H = { '*': 'aᵐ · aⁿ = aᵐ⁺ⁿ', '/': 'aᵐ : aⁿ = aᵐ⁻ⁿ', '^': '(aᵐ)ⁿ = aᵐⁿ' };
-  let e = ri(2, 6), s = `${x}^${e}`, d = `${x}${sup(e)}`; const steps = [], used = new Set();
+  let e = ri(2, 6), s = `${x}^${e}`, d = `${x}${sup(e)}`, viz = ''; const steps = [], used = new Set();
   for (let i = 0; i < lvl; i++) {
     const avail = ['*']; if (e >= 2) avail.push('/'); if (e <= 8) avail.push('^');
     const op = pick(avail); used.add(op);
-    if (op === '*') { const m = ri(1, 6); s += `*${x}^${m}`; d += ` · ${x}${sup(m)}`; steps.push(`${x}${sup(e)} · ${x}${sup(m)} = ${x}${sup(e + m)} &nbsp; (додаємо: ${e} + ${m})`); e += m; }
-    if (op === '/') { const m = ri(1, e - 1); s += `/${x}^${m}`; d += ` : ${x}${sup(m)}`; steps.push(`${x}${sup(e)} : ${x}${sup(m)} = ${x}${sup(e - m)} &nbsp; (віднімаємо: ${e} − ${m})`); e -= m; }
-    if (op === '^') { const n = ri(2, 3); s = `(${s})^${n}`; d = `(${d})${sup(n)}`; steps.push(`(${x}${sup(e)})${sup(n)} = ${x}${sup(e * n)} &nbsp; (множимо: ${e} · ${n})`); e *= n; }
+    if (op === '*') { const m = ri(1, 6); viz = cubesHTML('*', x, e, m); s += `*${x}^${m}`; d += ` · ${x}${sup(m)}`; steps.push(`${x}${sup(e)} · ${x}${sup(m)} = ${x}${sup(e + m)} &nbsp; (додаємо: ${e} + ${m})`); e += m; }
+    if (op === '/') { const m = ri(1, e - 1); viz = cubesHTML('/', x, e, m); s += `/${x}^${m}`; d += ` : ${x}${sup(m)}`; steps.push(`${x}${sup(e)} : ${x}${sup(m)} = ${x}${sup(e - m)} &nbsp; (віднімаємо: ${e} − ${m})`); e -= m; }
+    if (op === '^') { const n = ri(2, 3); viz = cubesHTML('^', x, e, n); s = `(${s})^${n}`; d = `(${d})${sup(n)}`; steps.push(`(${x}${sup(e)})${sup(n)} = ${x}${sup(e * n)} &nbsp; (множимо: ${e} · ${n})`); e *= n; }
   }
   steps.push(`Відповідь: <b>${x}${sup(e)}</b>`);
-  return { q: `Спростіть: <b>${d}</b>`, type: 'expr', std: 1, ans: `${x}^${e}`, steps, hint: [...used].map(o => H[o]).join('; &nbsp; ') + (s.includes(`${x}^1`) ? `; &nbsp; ${x} = ${x}¹` : '') };
+  return { q: `Спростіть: <b>${d}</b>`, type: 'expr', std: 1, ans: `${x}^${e}`, steps, viz: lvl === 1 ? viz : '', hint: [...used].map(o => H[o]).join('; &nbsp; ') + (s.includes(`${x}^1`) ? `; &nbsp; ${x} = ${x}¹` : '') };
 };
 // T3 — стандартний вигляд одночлена
 GEN.t3 = lvl => {
@@ -357,13 +419,13 @@ GEN.t5 = lvl => {
     : shuffle([{ x: 1, y: 1 }, { x: 2 }, { y: 2 }, { x: 2, y: 1 }, { x: 1, y: 2 }, { x: 1 }, { y: 1 }]).slice(0, 3);
   let T;
   do { T = shuffle(pool.flatMap(v => Array.from({ length: ri(1, lvl === 2 ? 3 : 2) }, () => [nz(-9, 9), v]))); } while (T.length <= pool.length || !parse(poly(T)).size);
-  const s = poly(T), p = parse(s), u = Math.random(), x = Object.keys(pool[0])[0];
-  if (lvl >= 2 && u < .25) return { q: `Зведіть подібні члени і знайдіть <b>степінь</b> многочлена: <b>${pretty(s)}</b>`, type: 'num', ans: pdeg(p), steps: [...likeSteps(T), `Після зведення: ${fmt(p)}`, `Степінь многочлена — найбільший зі степенів його членів: <b>${pdeg(p)}</b>`], hint: 'Спершу звести подібні, потім шукати найбільший степінь члена.' };
+  const s = poly(T), p = parse(s), u = Math.random(), x = Object.keys(pool[0])[0], viz = likeHTML([{ op: '', br: 0, terms: T }]);
+  if (lvl >= 2 && u < .25) return { q: `Зведіть подібні члени і знайдіть <b>степінь</b> многочлена: <b>${pretty(s)}</b>`, type: 'num', ans: pdeg(p), steps: [...likeSteps(T), `Після зведення: ${fmt(p)}`, `Степінь многочлена — найбільший зі степенів його членів: <b>${pdeg(p)}</b>`], viz, hint: 'Спершу звести подібні, потім шукати найбільший степінь члена.' };
   if (lvl === 2 && u < .45 && pool.every(v => Object.keys(v).every(y => y === x))) {
     const x0 = pick([-2, -1, 2, 3]), R = [...p].map(([k, c]) => [c, parseKey(k)]), v = evalAt(R, x, x0);
-    return { q: `Спростіть вираз і знайдіть його значення при <b>${x} = ${sn(x0)}</b>: <b>${pretty(s)}</b>`, type: 'num', ans: v, steps: [...likeSteps(T), `Після зведення: ${fmt(p)}`, `Підставляємо ${x} = ${pn(x0)}: <b>${sn(v)}</b>`], hint: 'Спершу звести подібні — рахувати стане набагато простіше.' };
+    return { q: `Спростіть вираз і знайдіть його значення при <b>${x} = ${sn(x0)}</b>: <b>${pretty(s)}</b>`, type: 'num', ans: v, steps: [...likeSteps(T), `Після зведення: ${fmt(p)}`, `Підставляємо ${x} = ${pn(x0)}: <b>${sn(v)}</b>`], viz, hint: 'Спершу звести подібні — рахувати стане набагато простіше.' };
   }
-  return { q: `Зведіть подібні члени: <b>${pretty(s)}</b>`, type: 'expr', std: 1, ans: s, steps: [...likeSteps(T), `Відповідь: <b>${P(s)}</b>`], hint: 'Подібні члени — з однаковою буквеною частиною. Складаємо їхні коефіцієнти. x² і x — не подібні!' };
+  return { q: `Зведіть подібні члени: <b>${pretty(s)}</b>`, type: 'expr', std: 1, ans: s, steps: [...likeSteps(T), `Відповідь: <b>${P(s)}</b>`], viz, hint: 'Подібні члени — з однаковою буквеною частиною. Складаємо їхні коефіцієнти. x² і x — не подібні!' };
 };
 // T6 — додавання і віднімання многочленів
 GEN.t6 = lvl => {
@@ -382,15 +444,15 @@ GEN.t6 = lvl => {
         { q: `(${pretty(poly(A))}) − M = ${pretty(poly(B))}`, s: `(${poly(A)})-(${poly(B)})`, m: 'M = A − B', open: [...A, ...neg(B)] }
       ]);
     } while (!parse(f.s).size);
-    return { q: `Знайдіть многочлен M, якщо <b>${f.q}</b>`, type: 'expr', std: 1, ans: f.s, steps: [`Виражаємо M: M = ${pretty(f.s)}`, ...fin(f.s, f.open)], hint: 'Невідомий доданок = сума − відомий доданок; невідоме зменшуване = різниця + від’ємник; невідомий від’ємник = зменшуване − різниця.' };
+    return { q: `Знайдіть многочлен M, якщо <b>${f.q}</b>`, type: 'expr', std: 1, ans: f.s, viz: likeHTML([{ op: '', br: 1, terms: A }, { op: ' &nbsp; і &nbsp; ', br: 1, terms: B }]), steps: [`Виражаємо M: M = ${pretty(f.s)}`, ...fin(f.s, f.open)], hint: 'Невідомий доданок = сума − відомий доданок; невідоме зменшуване = різниця + від’ємник; невідомий від’ємник = зменшуване − різниця.' };
   }
-  let s, open;
+  let s, open, Ps, ops;
   do {
-    const Ps = Array.from({ length: lvl === 3 ? ri(2, 3) : 2 }, R), ops = Ps.map((_, i) => (i ? pick(lvl === 2 ? ['-', '-', '+'] : ['+', '-']) : '+'));
+    Ps = Array.from({ length: lvl === 3 ? ri(2, 3) : 2 }, R); ops = Ps.map((_, i) => (i ? pick(lvl === 2 ? ['-', '-', '+'] : ['+', '-']) : '+'));
     s = Ps.map((p, i) => (i ? ops[i] : '') + `(${poly(p)})`).join('');
     open = Ps.flatMap((p, i) => (ops[i] === '-' ? neg(p) : p));
   } while (!parse(s).size);
-  return { q: `Спростіть вираз: <b>${pretty(s)}</b>`, type: 'expr', std: 1, ans: s, steps: [`Розкриваємо дужки: перед «+» знаки лишаються, перед «−» змінюються на протилежні`, ...fin(s, open)], hint: 'Мінус перед дужками змінює знак КОЖНОГО члена в дужках.' };
+  return { q: `Спростіть вираз: <b>${pretty(s)}</b>`, type: 'expr', std: 1, ans: s, viz: likeHTML(Ps.map((p, i) => ({ op: i ? (ops[i] === '-' ? ' − ' : ' + ') : '', br: 1, terms: p }))), steps: [`Розкриваємо дужки: перед «+» знаки лишаються, перед «−» змінюються на протилежні`, ...fin(s, open)], hint: 'Мінус перед дужками змінює знак КОЖНОГО члена в дужках.' };
 };
 // T7 — множення многочлена на одночлен
 GEN.t7 = lvl => {
@@ -401,7 +463,7 @@ GEN.t7 = lvl => {
   const line = (k, p) => p.map(t => `${pretty(mp(k))} · ${pretty(mp(t))} = ${mf(tmul(k, t))}`).join('; &nbsp; ');
   if (lvl < 3) {
     const k = K(), p = Pn(lvl === 1 ? 2 : 3), s = `${ms(k)}(${poly(p)})`;
-    return { q: `Виконайте множення: <b>${pretty(s)}</b>`, type: 'expr', std: 1, ans: s, steps: [`Множимо ${mf(k)} на <b>кожен</b> член многочлена:`, line(k, p), `Відповідь: <b>${P(s)}</b>`], hint: k[0] < 0 ? 'Одночлен з мінусом змінює знак кожного члена.' : 'a(b + c) = ab + ac — множимо на кожен член.' };
+    return { q: `Виконайте множення: <b>${pretty(s)}</b>`, type: 'expr', std: 1, ans: s, viz: arrowsHTML([{ k, p }]), steps: [`Множимо ${mf(k)} на <b>кожен</b> член многочлена:`, line(k, p), `Відповідь: <b>${P(s)}</b>`], hint: k[0] < 0 ? 'Одночлен з мінусом змінює знак кожного члена.' : 'a(b + c) = ab + ac — множимо на кожен член.' };
   }
   let s, all, k1, k2, p1, p2, op;
   do {
@@ -409,7 +471,7 @@ GEN.t7 = lvl => {
     s = `${ms(k1)}(${poly(p1)})${op}${ms(k2)}(${poly(p2)})`;
     all = [...ex(k1, p1), ...(op === '-' ? neg(ex(k2, p2)) : ex(k2, p2))];
   } while (!parse(s).size || new Set(all.map(t => mkey(t[1]))).size === all.length);
-  return { q: `Спростіть вираз: <b>${pretty(s)}</b>`, type: 'expr', std: 1, ans: s,
+  return { q: `Спростіть вираз: <b>${pretty(s)}</b>`, type: 'expr', std: 1, ans: s, viz: arrowsHTML([{ k: k1, p: p1 }, { neg: op === '-', k: k2, p: p2 }]),
     steps: [`Перші дужки: ${line(k1, p1)}`, `Другі дужки${op === '-' ? ' (перед ними «−», тож знаки потім змінимо)' : ''}: ${line(k2, p2)}`, `= ${pretty(poly(all))}`, 'Зводимо подібні:', ...likeSteps(all), `Відповідь: <b>${P(s)}</b>`],
     hint: 'Розкрий кожні дужки окремо, потім зведи подібні.' };
 };
@@ -433,7 +495,7 @@ const TOPICS = [
   <tr><td>aᵐ : aⁿ = aᵐ⁻ⁿ</td><td>ділимо — показники <b>віднімаємо</b></td><td>y⁹ : y⁴ = y⁵</td></tr>
   <tr><td>(aᵐ)ⁿ = aᵐⁿ</td><td>степінь степеня — показники <b>множимо</b></td><td>(a²)³ = a⁶</td></tr>
   <tr><td>(ab)ⁿ = aⁿbⁿ</td><td>добуток у степені — кожен множник у степінь</td><td>(2x)³ = 8x³</td></tr></table>
-  <details><summary>Чому x³ · x⁴ = x⁷?</summary><p>x³ · x⁴ = (x·x·x)·(x·x·x·x) — разом 7 множників x.</p></details>
+  <h4>Подивись на кубиках: кожен кубик — один множник</h4>${cubesHTML('*', 'x', 3, 4, 1)}${cubesHTML('/', 'y', 5, 2, 1)}${cubesHTML('^', 'a', 2, 3, 1)}
   <details><summary>Приклад: (−2a²)³</summary><p>(−2)³ = −8, (a²)³ = a⁶. Відповідь: −8a⁶.</p></details>
   <p class="warn">Типові помилки: x³ · x⁴ = x¹² (множити показники не треба!); (2x)³ = 2x³ (число теж у степінь: 8x³).</p>` },
  { id: 't3', title: 'Одночлен', sub: 'стандартний вигляд, коефіцієнт, степінь', theory: `
@@ -456,8 +518,8 @@ const TOPICS = [
   <p><b>Многочлен</b> — сума одночленів: 3x² − 5x + 7. Кожен доданок — <b>член</b> многочлена.</p>
   <p><b>Подібні члени</b> — з однаковою буквеною частиною: 5x і −2x; 3a²b і a²b. А x² і x — <b>не</b> подібні!</p>
   <h4>Зведення подібних</h4><p>Складаємо коефіцієнти, буквену частину переписуємо:</p>
-  <p class="big">5x − 3y + 2x − y = 7x − 4y</p>
-  <details><summary>Крок за кроком</summary><p>x: 5 + 2 = 7 → 7x. y: −3 − 1 = −4 → −4y. Відповідь: 7x − 4y.</p></details>
+  ${likeHTML([{ op: '', br: 0, terms: [[5, { x: 1 }], [-3, { y: 1 }], [2, { x: 1 }], [-1, { y: 1 }]] }])}
+  <p>Червоні (x): 5 + 2 = 7 → 7x. &nbsp; Сині (y): −3 − 1 = −4 → −4y.</p><p class="big">5x − 3y + 2x − y = 7x − 4y</p>
   <p><b>Степінь многочлена</b> (у стандартному вигляді) — найбільший степінь його членів: у x³ + 2x − 5 степінь 3.</p>
   <p class="warn">Порада: підкреслюй подібні однаково (x² — однією рискою, x — двома) — так нічого не загубиш.</p>` },
  { id: 't6', title: 'Додавання і віднімання многочленів', sub: 'розкриття дужок', theory: `
@@ -465,15 +527,15 @@ const TOPICS = [
   <p class="big">(3x + 5) + (2x − 8) = 3x + 5 + 2x − 8 = 5x − 3</p>
   <h4>Віднімання</h4><p>Перед дужками «−» — розкриваємо і <b>змінюємо знак кожного</b> члена в дужках:</p>
   <p class="big">(4a² − a) − (a² + 3a) = 4a² − a − a² − 3a = 3a² − 4a</p>
-  <details><summary>Ще приклад: (2x² + x) − (x² − 3x + 2)</summary><p>= 2x² + x − x² + 3x − 2 = x² + 4x − 2. Зверни увагу: −(−3x) = +3x, −(+2) = −2.</p></details>
+  <details><summary>Ще приклад: (2x² + x) − (x² − 3x + 2)</summary>${likeHTML([{ op: '', br: 1, terms: [[2, { x: 2 }], [1, { x: 1 }]] }, { op: ' − ', br: 1, terms: [[1, { x: 2 }], [-3, { x: 1 }], [2, {}]] }])}<p>= 2x² + x − x² + 3x − 2 = x² + 4x − 2. Зверни увагу: −(−3x) = +3x, −(+2) = −2.</p></details>
   <p class="warn">Найчастіша помилка: змінили знак лише першого члена в дужках. Мінус діє на ВСІ члени!</p>` },
  { id: 't7', title: 'Множення многочлена на одночлен', sub: 'a(b + c) = ab + ac', theory: `
   <p>Щоб помножити многочлен на одночлен, множимо одночлен на <b>кожен</b> член многочлена і додаємо:</p>
-  <p class="big">2a(3a² − 4a + 1) = 6a³ − 8a² + 2a</p>
-  <details><summary>Крок за кроком</summary><p>2a · 3a² = 6a³; &nbsp; 2a · (−4a) = −8a²; &nbsp; 2a · 1 = 2a.</p></details>
+  ${arrowsHTML([{ k: [2, { a: 1 }], p: [[3, { a: 2 }], [-4, { a: 1 }], [1, {}]] }], 1)}
   <h4>Одночлен з мінусом</h4><p>Змінює знак кожного члена: −5x(x² − 3x + 2) = −5x³ + 15x² − 10x.</p>
   <h4>Спрощення виразів</h4><p>Розкриваємо всі дужки, потім зводимо подібні:</p>
-  <p class="big">4y(y − 2) − y(3y + 1) = 4y² − 8y − 3y² − y = y² − 9y</p>
+  ${arrowsHTML([{ k: [4, { y: 1 }], p: [[1, { y: 1 }], [-2, {}]] }, { neg: true, k: [1, { y: 1 }], p: [[3, { y: 1 }], [1, {}]] }], 1)}
+  <p>Зводимо подібні: 4y² − 3y² = y², &nbsp; −8y − y = −9y. Відповідь: <b>y² − 9y</b></p>
   <p class="warn">Типова помилка: 2x(x − 3) = 2x² − 3. Забули помножити на 2x друге число: правильно 2x² − 6x.</p>` }
 ];
 
@@ -522,7 +584,7 @@ function key(k) {
   inp.focus(); preview();
 }
 function preview() { const v = $('#inp').value; $('#prev').textContent = v ? 'Ти пишеш: ' + pretty(normalize(v)) : ''; }
-function hint() { $('#fb').innerHTML = `<div class="hint">💡 ${task.hint}</div>`; }
+function hint() { $('#fb').innerHTML = `<div class="hint">💡 ${task.hint}${task.viz || ''}</div>`; $('#fb').querySelectorAll('.arcs').forEach(r => drawArcs(r, 99)); }
 function sol() { done = true; $('#fb').innerHTML = `<div class="sol"><b>Розв’язання:</b><ol>${task.steps.map(s => `<li>${s}</li>`).join('')}</ol><button class="go" onclick="next()">Далі →</button></div>`; }
 function check() {
   if (done) return next();
