@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="uk"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Паралельні прямі · 7 клас</title>
+<style>:root{--bg:#faf7f2;--card:#fff;--ink:#1f2340;--muted:#6b6f85;--acc:#4f46e5;--accs:#e8e7ff;--ok:#16a34a;--bad:#dc2626;--gold:#f59e0b}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:18px/1.5 "Segoe UI",Roboto,Arial,sans-serif}
+#app{max-width:860px;margin:0 auto;padding:16px}
+h1{font-size:1.6em;margin:.3em 0}.lead{color:var(--muted)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;margin-top:12px}
+.topic{position:relative;text-align:left;background:var(--card);border:2px solid #e6e3ee;border-radius:16px;padding:14px 14px 34px;font:inherit;color:inherit;cursor:pointer;display:flex;flex-direction:column;gap:2px}
+.topic:hover{border-color:var(--acc)}.topic:disabled{opacity:.55;cursor:default}.topic:disabled:hover{border-color:#e6e3ee}
+.topic .no{background:var(--acc);color:#fff;border-radius:50%;width:30px;height:30px;display:grid;place-items:center;font-weight:700;margin-bottom:4px}
+.topic small{color:var(--muted)}.stars{position:absolute;right:12px;bottom:8px;color:var(--gold);font-size:1.1em}
+.foot{color:var(--muted);font-size:.85em;margin-top:16px}.foot a{color:var(--acc)}
+.top{display:flex;align-items:center;gap:12px}.top h2{margin:.2em 0;font-size:1.3em}
+button{font:inherit;border:0;border-radius:12px;padding:.5em .9em;background:#ecebf3;color:var(--ink);cursor:pointer}
+button:hover{filter:brightness(.96)}
+.back{background:transparent;color:var(--acc);font-weight:700;padding-left:0;text-decoration:none;display:inline-block}
+.link{background:transparent;color:var(--acc);padding:0 .2em;text-decoration:underline}
+.go{background:var(--acc);color:#fff;font-weight:700;margin-top:12px}
+.card{background:var(--card);border-radius:16px;padding:16px;margin-top:14px;box-shadow:0 4px 18px rgba(31,35,64,.06)}
+.cnt{color:var(--muted);font-size:.85em}.q{font-size:1.25em;margin:.3em 0 .6em}
+.btns{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px}.btns .go{margin-top:0}
+.good{color:var(--ok);font-weight:700;font-size:1.15em;margin:.6em 0}
+.bad{color:var(--bad);margin:.6em 0}.hint{background:#fff8e1;border-radius:10px;padding:.5em .8em;margin:.6em 0}
+.sol{background:#eefbf2;border-radius:10px;padding:.5em .9em;margin:.6em 0}
+.opts{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px;margin-top:10px}.opts button{font-weight:700;padding:.75em .9em;min-height:52px}
+.pills{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0}.pills button{padding:.35em .7em;font-weight:700}.pills .on{outline:3px solid var(--acc)}.pills .ok{background:#dcfce7;color:var(--ok)}
+.inp{width:100%;font-size:1.25em;padding:.4em .6em;border:2px solid #d9d6e6;border-radius:12px;outline:none;margin-top:4px}.inp:focus{border-color:var(--acc)}.inp.wrong{border-color:var(--bad)}
+label.fld{display:block;margin:8px 0;font-weight:700}
+.flash{background:var(--card);border:2px solid #e6e3ee;border-radius:16px;padding:18px;margin-top:10px;cursor:pointer;min-height:180px}
+.flash .ans{font-size:1.15em;margin-bottom:8px}
+.fig{width:100%;height:auto;display:block;background:#fff;border:2px solid #eeeaf6;border-radius:12px;margin:6px 0;touch-action:manipulation}
+.fig line{stroke:var(--ink);stroke-width:2.5;stroke-linecap:round}.fig line.sc{stroke:var(--acc);stroke-width:4}
+.fig .lb{font:italic 700 26px Georgia,serif;fill:var(--ink)}
+.fig .sv{fill:#f1f0f7}.fig .s-blue{fill:#a5b4fc}.fig .s-green{fill:#86efac}.fig .s-red{fill:#fca5a5}.fig .s-orange{fill:#fdba74}
+.fig .num{font:700 23px sans-serif;fill:#4b4f66;text-anchor:middle;dominant-baseline:central}
+.fig .val{font:800 23px sans-serif;fill:var(--acc);text-anchor:middle;dominant-baseline:central;paint-order:stroke;stroke:#fff;stroke-width:4px}
+.fig .hit{fill:transparent;cursor:pointer}
+.res{border:3px solid var(--acc);border-radius:16px;padding:16px;background:#fff}.res .big{font-size:1.6em;font-weight:800}
+.code{font:700 1.3em ui-monospace,monospace;letter-spacing:.05em;white-space:nowrap;background:var(--accs);border-radius:8px;padding:.1em .4em}
+</style></head><body><div id="app"></div>
+<script>
+// ===== Малюнок: прямі a, b, січна c, кути 1–8 (нумерація як на мал. 8.15) =====
+const PHI = Math.atan2(282, 220) * 180 / Math.PI;           // нахил січної c
+const PT = { A: [272.9, 90], B: [187.1, 210] };
+// кут → [точка, від, до] у градусах проти годинникової стрілки
+const ANG = { 5: ['A', PHI, 180], 6: ['A', 0, PHI], 1: ['A', 180, 180 + PHI], 2: ['A', 180 + PHI, 360],
+              4: ['B', PHI, 180], 3: ['B', 0, PHI], 8: ['B', 180, 180 + PHI], 7: ['B', 180 + PHI, 360] };
+const ACUTE = [1, 3, 6, 8];
+const pol = ([cx, cy], r, d) => [cx + r * Math.cos(d * Math.PI / 180), cy - r * Math.sin(d * Math.PI / 180)];
+function sector(c, r, a1, a2) {
+  const p = pol(c, r, a1), q = pol(c, r, a2), f = x => x.toFixed(1);
+  return `M${c[0]},${c[1]} L${f(p[0])},${f(p[1])} A${r},${r} 0 0 0 ${f(q[0])},${f(q[1])}Z`;
+}
+// o: { hl: {кут: колір}, vals: {кут: текст}, click, sec }
+function fig(o = {}) {
+  const hl = o.hl || {}, vals = o.vals || {}, ns = Object.keys(ANG);
+  let s = `<svg class="fig" viewBox="0 0 460 300" role="img" aria-label="Прямі a і b, січна c, кути від 1 до 8">`;
+  s += ns.map(n => { const [p, a1, a2] = ANG[n]; return `<path class="sv ${hl[n] ? 's-' + hl[n] : ''}" d="${sector(PT[p], 34, a1, a2)}"/>`; }).join('');
+  s += `<line x1="20" y1="90" x2="440" y2="90"/><line x1="20" y1="210" x2="440" y2="210"/><line class="${o.sec ? 'sc' : ''}" x1="120" y1="290" x2="340" y2="8"/>`;
+  s += `<text class="lb" x="430" y="78">a</text><text class="lb" x="430" y="198">b</text><text class="lb" x="352" y="22">c</text>`;
+  s += ns.map(n => {
+    const [p, a1, a2] = ANG[n], m = (a1 + a2) / 2, [x, y] = pol(PT[p], 56, m);
+    let t = `<text class="num" x="${x.toFixed(1)}" y="${y.toFixed(1)}">${n}</text>`;
+    if (vals[n]) { const [vx, vy] = pol(PT[p], 92, m); t += `<text class="val" x="${vx.toFixed(1)}" y="${vy.toFixed(1)}">${vals[n]}</text>`; }
+    return t;
+  }).join('');
+  if (o.click) s += ns.map(n => { const [p, a1, a2] = ANG[n]; return `<path class="hit" d="${sector(PT[p], 70, a1, a2)}" onclick="pick(${n})"/>`; }).join('');
+  return s + '</svg>';
+}
+// Малюнок до 5.5: трикутник ABC, KP ∥ AC
+const FIG55 = `<svg class="fig" viewBox="0 0 460 300" role="img" aria-label="Трикутник ABC, відрізок KP паралельний AC">
+  <line x1="60" y1="270" x2="200" y2="30"/><line x1="200" y1="30" x2="400" y2="270"/><line x1="60" y1="270" x2="400" y2="270"/><line class="sc" x1="137" y1="138" x2="290" y2="138"/>
+  <text class="lb" x="38" y="290">A</text><text class="lb" x="192" y="22">B</text><text class="lb" x="406" y="290">C</text><text class="lb" x="108" y="140">K</text><text class="lb" x="298" y="140">P</text>
+  <text class="val" x="168" y="122">55°</text><text class="val" x="262" y="122">75°</text></svg>`;
+// Малюнок до 5.7: кут ABC, пряма через M паралельна BC
+const FIG57 = `<svg class="fig" viewBox="0 0 460 300" role="img" aria-label="Кут ABC, через точку M на BA проведено пряму, паралельну BC">
+  <line x1="60" y1="250" x2="430" y2="250"/><line x1="60" y1="250" x2="313" y2="38"/><line class="sc" x1="100" y1="144" x2="440" y2="144"/>
+  <text class="lb" x="40" y="272">B</text><text class="lb" x="420" y="276">C</text><text class="lb" x="318" y="34">A</text><text class="lb" x="168" y="132">M</text>
+  <text class="val" x="118" y="236">40°</text></svg>`;
+
+// ===== Пари кутів (за цією нумерацією) =====
+const PAIRS = {
+  'вертикальні': [[5, 2], [6, 1], [4, 7], [3, 8]],
+  'суміжні': [[5, 6], [1, 2], [5, 1], [6, 2], [4, 3], [8, 7], [4, 8], [3, 7]],
+  'внутрішні різносторонні': [[1, 3], [2, 4]],
+  'внутрішні односторонні': [[1, 4], [2, 3]],
+  'відповідні': [[5, 4], [6, 3], [1, 8], [2, 7]]
+};
+const rel = (x, y) => Object.keys(PAIRS).find(k => PAIRS[k].some(([p, q]) => (p === x && q === y) || (p === y && q === x)));
+const WHY = {
+  'вертикальні': 'сторони одного є продовженнями сторін іншого; вертикальні кути рівні',
+  'суміжні': 'мають спільну сторону, а в сумі дають 180°',
+  'внутрішні різносторонні': 'лежать між прямими a і b по різні боки від січної',
+  'внутрішні односторонні': 'лежать між прямими a і b по один бік від січної',
+  'відповідні': 'займають однакове положення біля різних прямих'
+};
+const PHR = { 'вертикальні': 'вертикальний до', 'суміжні': 'суміжний з', 'внутрішні різносторонні': 'внутрішній різносторонній з', 'внутрішні односторонні': 'внутрішній односторонній з', 'відповідні': 'відповідний до' };
+const WHERE = {
+  'вертикальні': 'Вертикальний кут — біля тієї самої точки, навпроти.',
+  'суміжні': 'Суміжний кут — біля тієї самої точки, поруч: у них спільна сторона.',
+  'внутрішні різносторонні': 'Шукай кут між a і b по інший бік від січної.',
+  'внутрішні односторонні': 'Шукай кут між a і b по той самий бік від січної.',
+  'відповідні': 'Відповідні кути «однаково розташовані»: якщо один ліворуч угорі біля a, то другий — ліворуч угорі біля b.'
+};
+const REASON = { rizn: 'різносторонні рівні', vidp: 'відповідні рівні', odn: 'сума односторонніх 180°' };
+const sideOf = n => (ACUTE.includes(n) ? 'гострий' : 'тупий');
+
+// ===== Завдання =====
+const CARDS = [
+  ['Які кути називають вертикальними? Яка їх властивість?', 'Сторони одного є продовженнями сторін іншого. Вертикальні кути рівні (5 і 2).', { hl: { 5: 'blue', 2: 'blue' } }],
+  ['Які кути називають суміжними? Яка їх властивість?', 'Одна сторона спільна, дві інші утворюють пряму. Сума суміжних кутів 180° (1 і 2).', { hl: { 1: 'blue', 2: 'orange' } }],
+  ['Що таке січна?', 'Пряма, яка перетинає дві інші прямі (c на малюнку).', { sec: 1 }],
+  ['Які кути внутрішні?', 'Ті, що лежать між прямими a і b: 1, 2, 3, 4.', { hl: { 1: 'blue', 2: 'blue', 3: 'blue', 4: 'blue' } }],
+  ['Внутрішні різносторонні кути', 'Внутрішні кути по різні боки від січної: 1 і 3, 2 і 4.', { hl: { 1: 'blue', 3: 'blue', 2: 'orange', 4: 'orange' } }],
+  ['Внутрішні односторонні кути', 'Внутрішні кути по один бік від січної: 1 і 4, 2 і 3.', { hl: { 1: 'blue', 4: 'blue', 2: 'orange', 3: 'orange' } }],
+  ['Відповідні кути', 'Займають однакове положення біля різних прямих: 5 і 4, 6 і 3, 1 і 8, 2 і 7.', { hl: { 5: 'blue', 4: 'blue', 2: 'orange', 7: 'orange' } }],
+  ['Ознака 1', 'Якщо внутрішні різносторонні кути рівні, то прямі паралельні.', { hl: { 1: 'blue', 3: 'blue' } }],
+  ['Ознака 2', 'Якщо відповідні кути рівні, то прямі паралельні.', { hl: { 5: 'blue', 4: 'blue' } }],
+  ['Ознака 3', 'Якщо сума внутрішніх односторонніх кутів 180°, то прямі паралельні.', { hl: { 1: 'blue', 4: 'orange' } }],
+  ['Аксіома Евкліда', 'Через точку поза прямою можна провести тільки одну пряму, паралельну даній.'],
+  ['Властивість (теорема 6 і наслідки)', 'Якщо прямі паралельні, то різносторонні кути рівні, відповідні рівні, сума односторонніх 180°.'],
+  ['Ознака чи властивість — як розрізнити?', 'Ознака: знаємо кути → висновок про прямі. Властивість: знаємо, що прямі паралельні → висновок про кути.'],
+  ['Головне правило для малюнка, якщо a ∥ b', 'Усі гострі кути рівні, усі тупі рівні, гострий + тупий = 180°.', { hl: { 1: 'green', 3: 'green', 6: 'green', 8: 'green', 2: 'orange', 4: 'orange', 5: 'orange', 7: 'orange' } }]
+];
+const S1 = [[1, 3], [2, 3], [5, 4], [6, 1], [4, 3], [2, 4], [1, 8], [1, 4], [3, 8], [2, 7]];
+const S2 = [[1, 'відповідні', [8]], [2, 'внутрішні різносторонні', [4]], [5, 'вертикальні', [2]], [3, 'внутрішні односторонні', [2]],
+            [6, 'відповідні', [3]], [7, 'суміжні', [8, 3]], [1, 'внутрішні односторонні', [4]], [7, 'відповідні', [2]]];
+const TRICKY = 'Ці кути не з тих пар, що в ознаках. Перейди до потрібної пари через вертикальні кути.';
+const S3 = [
+  { v: { 1: 65, 3: 65 }, yes: 1, why: 'rizn', ex: '∠1 і ∠3 — внутрішні різносторонні, і вони рівні (65° = 65°). Отже, a ∥ b.' },
+  { v: { 5: 120, 4: 120 }, yes: 1, why: 'vidp', ex: '∠5 і ∠4 — відповідні, і вони рівні. Отже, a ∥ b.' },
+  { v: { 2: 110, 3: 80 }, yes: 0, ex: '∠2 і ∠3 — внутрішні односторонні, але 110° + 80° = 190° ≠ 180°. Прямі не паралельні.' },
+  { v: { 1: 70, 8: 70 }, yes: 1, why: 'vidp', ex: '∠1 і ∠8 — відповідні, і вони рівні. Отже, a ∥ b.' },
+  { v: { 6: 50, 7: 130 }, yes: 1, why: 'odn', h: '∠6 вертикальний з ∠1, ∠7 вертикальний з ∠4. Отримаєш пару ∠1 і ∠4 — внутрішні односторонні.', ex: '∠1 = ∠6 = 50°, ∠4 = ∠7 = 130° (вертикальні). ∠1 і ∠4 — внутрішні односторонні: 50° + 130° = 180°. Отже, a ∥ b.' },
+  { v: { 5: 115, 3: 65 }, yes: 1, why: 'odn', h: '∠5 вертикальний з ∠2. Отримаєш пару ∠2 і ∠3 — внутрішні односторонні.', ex: '∠2 = ∠5 = 115° (вертикальні). ∠2 і ∠3 — внутрішні односторонні: 115° + 65° = 180°. Отже, a ∥ b.' },
+  { v: { 2: 100, 8: 90 }, yes: 0, h: '∠8 вертикальний з ∠3. Отримаєш пару ∠2 і ∠3 — внутрішні односторонні.', ex: '∠3 = ∠8 = 90° (вертикальні). ∠2 і ∠3 — внутрішні односторонні: 100° + 90° = 190° ≠ 180°. Прямі не паралельні.' }
+];
+const S4 = [
+  { g: 1, gv: 72, t: 3, a: 72, h: 'різносторонні рівні' }, { g: 1, gv: 72, t: 4, a: 108, h: 'односторонні: 180° − 72°' },
+  { g: 1, gv: 72, t: 8, a: 72, h: 'відповідні рівні' }, { g: 1, gv: 72, t: 5, a: 108, h: '∠5 суміжний з ∠1' },
+  { g: 2, gv: 135, t: 4, a: 135, h: 'різносторонні рівні' }, { g: 2, gv: 135, t: 6, a: 45, h: '∠6 гострий: 180° − 135°' },
+  { g: 7, gv: 118, t: 1, a: 62, h: '∠7 тупий, ∠1 гострий: 180° − 118°' }
+];
+const S5 = [
+  { q: 'Знайди всі кути, утворені при перетині двох паралельних прямих січною, якщо один із них на 40° більший за інший.', f: [{ l: 'Кути (два числа)', set: [70, 110] }],
+    h: ['Два різні кути — гострий і тупий, їх сума 180°.', 'x + x + 40° = 180°'], sol: 'Гострий x, тупий x + 40°, разом 180°: 2x + 40° = 180°, x = 70°. Кути: <b>70° і 110°</b>.' },
+  { q: '<i>a</i> ∥ <i>b</i>, ∠3 : ∠2 = 2 : 7. Знайди ∠3 і ∠2.', fig: fig({ hl: { 2: 'blue', 3: 'orange' } }), f: [{ l: '∠3 =', a: 40 }, { l: '∠2 =', a: 140 }],
+    h: ['∠2 і ∠3 односторонні: сума 180°.', '2x + 7x = 180°'], sol: '∠2 + ∠3 = 180°. 2x + 7x = 180°, x = 20°. <b>∠3 = 40°, ∠2 = 140°</b>.' },
+  { q: '<i>a</i> ∥ <i>b</i>, ∠4 − ∠1 = 50°. Знайди ∠4 і ∠1.', fig: fig({ hl: { 1: 'blue', 4: 'orange' } }), f: [{ l: '∠4 =', a: 115 }, { l: '∠1 =', a: 65 }],
+    h: ['∠1 і ∠4 односторонні: ∠4 + ∠1 = 180°.', 'Сума і різниця відомі: додай рівності.'], sol: '∠4 + ∠1 = 180°, ∠4 − ∠1 = 50°. Додаємо: 2∠4 = 230°, <b>∠4 = 115°, ∠1 = 65°</b>.' },
+  { q: '<i>a</i> ∥ <i>b</i>, ∠6 + ∠8 = 130°. Знайди гострі і тупі кути.', fig: fig({ hl: { 6: 'blue', 8: 'blue' } }), f: [{ l: 'Гострі =', a: 65 }, { l: 'Тупі =', a: 115 }],
+    h: ['∠6 і ∠8 обидва гострі, тобто рівні.', '130° : 2'], sol: '∠6 = ∠8 = 130° : 2 = 65°. Тупі: 180° − 65° = 115°. <b>Гострі 65°, тупі 115°</b>.' },
+  { q: 'На сторонах AB і BC трикутника ABC взято точки K і P так, що KP ∥ AC. ∠BKP = 55°, ∠BPK = 75°. Знайди кути чотирикутника AKPC.', fig: FIG55,
+    f: [{ l: '∠A =', a: 55 }, { l: '∠AKP =', a: 125 }, { l: '∠KPC =', a: 105 }, { l: '∠C =', a: 75 }],
+    h: ['∠A і ∠BKP — відповідні (січна AB).', '∠AKP суміжний з ∠BKP.'],
+    sol: 'Січна AB: ∠A = ∠BKP = 55° (відповідні). Січна BC: ∠C = ∠BPK = 75°. ∠AKP = 180° − 55° = 125°, ∠KPC = 180° − 75° = 105°. <b>55°, 125°, 105°, 75°</b>.' },
+  { q: 'Кут між однією з двох паралельних прямих і січною дорівнює 70°. Під яким кутом бісектриса цього кута перетинає другу пряму?', f: [{ l: 'Кут =', a: 35 }],
+    h: ['Бісектриса ділить 70° навпіл.', 'Бісектриса — теж січна; шукаємо різносторонній кут.'], sol: 'Бісектриса ділить 70° на два кути по 35°. Для паралельних прямих бісектриса — січна, різносторонні кути рівні: <b>35°</b>.' },
+  { q: 'На стороні BA кута ABC взято точку M і через неї проведено пряму, паралельну BC. ∠ABC = 40°. Знайди кути при вершині M.', fig: FIG57, f: [{ l: 'Кути (два числа)', set: [40, 140] }],
+    h: ['∠ABC і кут при M — відповідні.', 'Другий кут — суміжний.'], sol: 'Січна BA: кут при M дорівнює ∠ABC = 40° (відповідні). Суміжний з ним: 180° − 40° = 140°. <b>40° і 140°</b>.' }
+];
+const STEPS = [
+  { title: 'Флеш-картки', sub: 'гортай правила' },
+  { title: 'Назви пару кутів', sub: 'вертикальні, суміжні, відповідні…', tasks: S1 },
+  { title: 'Знайди кут на малюнку', sub: 'натисни на потрібний кут', tasks: S2 },
+  { title: 'Чи паралельні прямі?', sub: 'ознаки паралельності', tasks: S3 },
+  { title: 'a ∥ b — знайди кут', sub: 'властивості паралельних прямих', tasks: S4 },
+  { title: 'Задачі', sub: 'текстові задачі', tasks: S5 },
+  { title: 'Перевір себе', sub: '8 завдань без підказок, оцінка' }
+];
+
+// ===== Як показати завдання кожного кроку =====
+const num = s => { const t = s.replace(/[\s°]/g, ''); return /^\d+$/.test(t) ? +t : NaN; };
+const RENDER = {
+  1: ([a, b]) => { const r = rel(a, b); return {
+    q: `Як називається пара кутів ∠${a} і ∠${b}?`,
+    body: fig({ hl: { [a]: 'blue', [b]: 'blue' } }) + `<div class="opts">${Object.keys(PAIRS).map(n => `<button data-v="${n}" onclick="cur.R.act(this.dataset.v)">${n}</button>`).join('')}</div>`,
+    act: v => answer(v === r, `Ні, не ${v}. ∠${a} і ∠${b} — ${r}: ${WHY[r]}.`),
+    hints: ['Чи лежать обидва кути між прямими a і b?', 'Вони по один бік від січної чи по різні?'],
+    sol: `∠${a} і ∠${b} — <b>${r}</b>: ${WHY[r]}.` }; },
+  2: ([g, r, ans]) => ({
+    q: `Натисни на ${ans.length > 1 ? 'будь-який кут' : 'кут'}, ${PHR[r]} ∠${g}`,
+    body: `<div id="figbox">${fig({ hl: { [g]: 'blue' }, click: true })}</div>`,
+    pick: n => {
+      const ok = ans.includes(n), k = rel(n, g);
+      $('#figbox').innerHTML = fig({ hl: { [g]: 'blue', [n]: cur.mode === 'test' ? 'orange' : ok ? 'green' : 'red' }, click: true });
+      answer(ok, n === g ? `Це сам ∠${g}. Потрібен інший кут.` : `Це ∠${n}: ∠${n} і ∠${g} — ${k || 'не утворюють жодної з пар'}. А потрібен кут, ${PHR[r]} ∠${g}.`);
+    },
+    hints: [`Нагадай означення: ${r} кути ${WHY[r]}.`, WHERE[r]],
+    sol: `∠${ans.join(' або ∠')}: ∠${ans[0]} і ∠${g} — ${r}.` }),
+  3: t => { const ks = Object.keys(t.v).map(Number), r = rel(ks[0], ks[1]); return {
+    q: 'Чи паралельні прямі a і b?',
+    body: fig({ hl: Object.fromEntries(ks.map(n => [n, 'blue'])), vals: Object.fromEntries(ks.map(n => [n, t.v[n] + '°'])) }) +
+      `<div class="opts"><button data-v="yes" onclick="cur.R.act(this.dataset.v)">Так</button><button data-v="no" onclick="cur.R.act(this.dataset.v)">Ні</button></div><div id="why"></div>`,
+    act: v => {
+      if (v === 'no' || !t.yes) return answer((v === 'no') === !t.yes, t.ex);
+      $('#why').innerHTML = `<p><b>Чому?</b></p><div class="opts">${Object.entries(REASON).map(([k, s]) => `<button data-v="${k}" onclick="cur.R.why(this.dataset.v)">${s}</button>`).join('')}</div>`;
+    },
+    why: v => answer(v === t.why, `Ця ознака тут не підходить. ${t.ex}`),
+    hints: t.h ? [TRICKY, t.h] : ['Яку пару утворюють ці кути? Ознаки: різносторонні рівні, відповідні рівні, сума односторонніх 180°.',
+      `∠${ks[0]} і ∠${ks[1]} — ${r}. ${r === 'внутрішні односторонні' ? 'Перевір, чи їх сума 180°.' : 'Перевір, чи вони рівні.'}`],
+    sol: t.ex }; },
+  4: t => ({
+    q: `<i>a</i> ∥ <i>b</i>, ∠${t.g} = ${t.gv}°. Знайди ∠${t.t}.`,
+    body: fig({ hl: { [t.g]: 'blue', [t.t]: 'orange' }, vals: { [t.g]: t.gv + '°', [t.t]: '?' } }) +
+      `<label class="fld">∠${t.t} =<input id="f0" class="inp" inputmode="numeric" autocomplete="off" placeholder="Наприклад: 65"></label><button class="go" onclick="cur.R.act()">Перевірити</button>`,
+    act: () => {
+      const v = num($('#f0').value); if (isNaN(v)) return warn('Введи число, наприклад 65 або 65°');
+      answer(v === t.a, v === 180 - t.a ? `Ні, ${v}° — це кут, що доповнює ∠${t.t} до 180°. ∠${t.t} — ${sideOf(t.t)}, ∠${t.g} — ${sideOf(t.g)}.` : `Неправильно. ∠${t.t} — ${sideOf(t.t)} кут, ∠${t.g} — ${sideOf(t.g)}.`);
+    },
+    hints: [`Якщо a ∥ b: усі гострі кути рівні, усі тупі рівні, гострий + тупий = 180°. ∠${t.t} гострий чи тупий?`, `∠${t.t} і ∠${t.g}: ${t.h}.`],
+    sol: t.a === t.gv ? `∠${t.t} = ∠${t.g} = <b>${t.a}°</b> (${t.h}).` : `∠${t.t} = 180° − ${t.gv}° = <b>${t.a}°</b> (${t.h}).` }),
+  5: t => ({
+    q: t.q,
+    body: (t.fig || '') + t.f.map((f, j) => `<label class="fld">${f.l}<input id="f${j}" class="inp" inputmode="${f.set ? 'text' : 'numeric'}" autocomplete="off" placeholder="${f.set ? 'Наприклад: 50 і 130' : 'Наприклад: 65'}"></label>`).join('') +
+      `<button class="go" onclick="cur.R.act()">Перевірити</button>`,
+    act: () => {
+      const res = t.f.map((f, j) => {
+        const s = $('#f' + j).value;
+        if (f.set) { const ns = (s.match(/\d+/g) || []).map(Number).sort((x, y) => x - y); return ns.length ? String(ns) === String(f.set) : null; }
+        const v = num(s); return isNaN(v) ? null : v === f.a;
+      });
+      if (res.includes(null)) return warn('Заповни всі поля числами, наприклад 65 або 65°');
+      if (cur.mode === 'practice') t.f.forEach((_, j) => $('#f' + j).classList.toggle('wrong', !res[j]));
+      answer(res.every(Boolean), t.f.length > 1 ? 'Не всі відповіді правильні — поля з помилками позначено червоним.' : 'Неправильно. Спробуй підказку.');
+    },
+    hints: t.h, sol: t.sol })
+};
+
+// ===== Стан =====
+const $ = s => document.querySelector(s);
+const KEY = 'geo7-paralelni';
+let store = { name: '', cls: '', done: {}, s0: false, attempts: 0, best: null };
+try { Object.assign(store, JSON.parse(localStorage.getItem(KEY) || '{}')); } catch (e) {}
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(store)); } catch (e) {} };
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const shuffle = a => { a = [...a]; for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const solved = k => store.done[k] || [];
+const complete = k => (k === 0 ? store.s0 : k < 6 ? STEPS[k].tasks.every((_, i) => solved(k).includes(i)) : !!store.best);
+const unlocked = k => k === 0 || [...Array(k).keys()].every(complete);
+let cur = null, test = null, deck = [];
+const pick = n => cur && cur.R.pick && cur.R.pick(n);
+const head = k => `<div class="top"><button class="back" onclick="home()">← Кроки</button><h2>${k}. ${STEPS[k].title}</h2></div>`;
+
+// ===== Код результату для вчителя =====
+const SALT = 'bevz7-par-2026';
+const norm = s => s.trim().toLowerCase().replace(/\s+/g, ' ');
+function h32(s) { let h = 2166136261; for (const c of s) { h ^= c.codePointAt(0); h = Math.imul(h, 16777619) >>> 0; } return h; }
+const sign = (name, cls, p) => (h32(norm(name) + '|' + norm(cls) + '|' + p + SALT) % 1679616).toString(36).padStart(4, '0');
+function mkCode(r) { const p = r.at.toString(36).padStart(6, '0') + '-' + r.score + r.n.toString(36).padStart(2, '0'); return (p + '-' + sign(store.name, store.cls, p)).toUpperCase(); }
+const when = at => new Date(at * 60000).toLocaleString('uk-UA', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+const gradeOf = score => Math.max(1, Math.round(score * 1.5));
+
+// ===== Екрани =====
+function home() {
+  cur = null;
+  if (location.hash === '#vchytel') return teacher();
+  if (!store.name) return nameForm();
+  $('#app').innerHTML = `<a class="back" href="../../">← Алгебра 7 клас</a><h1>Паралельні прямі</h1>
+  <p class="lead">7 клас · геометрія · Бевз, § 7–8. Учень: <b>${esc(store.name)}</b>, ${esc(store.cls)} <button class="link" onclick="changeName()">змінити</button></p>
+  <div class="grid">${STEPS.map((s, k) => {
+    const lock = !unlocked(k), prog = s.tasks ? `${solved(k).length}/${s.tasks.length}` : '';
+    return `<button class="topic" ${lock ? 'disabled' : ''} onclick="openStep(${k})"><span class="no">${k}</span><b>${s.title}</b><small>${s.sub}</small><span class="stars">${complete(k) ? '✔' : lock ? '🔒' : prog}</span></button>`;
+  }).join('')}</div>
+  ${store.best ? `<button class="go" onclick="showCard()">Моя картка результату для вчителя</button>` : ''}
+  <p class="foot">Кроки обов’язкові: кожен наступний відкривається, коли пройдено попередній. «Перевір себе» відкривається після кроків 0–5. Прогрес зберігається лише на цьому пристрої. · <a href="#vchytel">Для вчителя</a></p>`;
+}
+function nameForm() {
+  $('#app').innerHTML = `<a class="back" href="../../">← Алгебра 7 клас</a><h1>Паралельні прямі</h1><p class="lead">7 клас · геометрія. Напиши своє ім’я та клас — вони будуть на картці результату для вчителя.</p>
+  <div class="card"><label class="fld">Прізвище та ім’я<input id="nm" class="inp" autocomplete="name"></label><label class="fld">Клас<input id="cl" class="inp" placeholder="Наприклад: 7-А"></label>
+  <button class="go" onclick="setName()">Почати</button><div id="fb"></div></div><p class="foot"><a href="#vchytel">Для вчителя</a></p>`;
+}
+function setName() {
+  const n = $('#nm').value.trim().replace(/\s+/g, ' '), c = $('#cl').value.trim();
+  if (n.split(' ').length < 2 || !c) return ($('#fb').innerHTML = '<div class="bad">Напиши прізвище та ім’я (два слова) і клас.</div>');
+  store.name = n; store.cls = c; save(); home();
+}
+function changeName() {
+  if (!confirm('Змінити ім’я? Увесь прогрес на цьому пристрої буде скинуто.')) return;
+  store = { name: '', cls: '', done: {}, s0: false, attempts: 0, best: null }; save(); home();
+}
+function openStep(k, i) {
+  if (!unlocked(k)) return home();
+  if (k === 0) return cards();
+  if (k === 6) return startTest();
+  const ts = STEPS[k].tasks, d = solved(k);
+  if (i === undefined) i = Math.max(0, ts.findIndex((_, j) => !d.includes(j)));
+  cur = { k, i, mode: 'practice', hint: 0 };
+  $('#app').innerHTML = head(k) + `<div class="pills">${ts.map((_, j) => `<button class="${j === i ? 'on' : ''} ${d.includes(j) ? 'ok' : ''}" onclick="openStep(${k},${j})">${k}.${j + 1}</button>`).join('')}</div><div class="card" id="task"></div>`;
+  renderTask(ts[i]);
+}
+function renderTask(t) {
+  cur.R = RENDER[cur.k](t);
+  $('#task').innerHTML = `<div class="q">${cur.R.q}</div>${cur.R.body}` + (cur.mode === 'practice'
+    ? `<div class="btns"><button id="hb" onclick="showHint()">💡 Підказка 1</button><button id="sb" onclick="showSol()">Показати розв’язання</button></div><div id="hint"></div>` : '') + '<div id="fb"></div>';
+  document.querySelectorAll('#task .inp').forEach(x => x.addEventListener('keydown', e => { if (e.key === 'Enter') cur.R.act(); }));
+}
+function showHint() {
+  cur.hint++; $('#hint').innerHTML = cur.R.hints.slice(0, cur.hint).map((h, j) => `<div class="hint">💡 ${j + 1}. ${h}</div>`).join('');
+  if (cur.hint >= 2) $('#hb').remove(); else $('#hb').textContent = '💡 Підказка 2';
+}
+function showSol() { $('#sb').remove(); $('#task').insertAdjacentHTML('beforeend', `<div class="sol"><b>Розв’язання:</b> ${cur.R.sol}</div>`); }
+const warn = msg => ($('#fb').innerHTML = `<div class="bad">${msg}</div>`);
+function answer(ok, msg) {
+  if (cur.mode === 'test') return testAnswer(ok);
+  if (!ok) return warn(msg);
+  const d = store.done[cur.k] = solved(cur.k); if (!d.includes(cur.i)) d.push(cur.i); save();
+  document.querySelectorAll('.pills button')[cur.i].classList.add('ok');
+  const nx = STEPS[cur.k].tasks.findIndex((_, j) => !d.includes(j));
+  $('#fb').innerHTML = '<div class="good">✅ Правильно!</div>' + (nx >= 0 ? `<button class="go" onclick="openStep(${cur.k},${nx})">Далі →</button>`
+    : `<div class="good">🎉 Крок ${cur.k} пройдено!</div><button class="go" onclick="openStep(${cur.k + 1})">${cur.k + 1}. ${STEPS[cur.k + 1].title} →</button>`);
+}
+
+// Крок 0 — флеш-картки
+function cards() { deck = CARDS.map((_, i) => i); drawCard(); }
+function drawCard() {
+  if (!deck.length) { store.s0 = true; save(); $('#app').innerHTML = head(0) + `<div class="card"><div class="good">🎉 Усі картки пройдено!</div><button class="go" onclick="openStep(1)">1. ${STEPS[1].title} →</button></div>`; return; }
+  $('#app').innerHTML = head(0) + `<div class="cnt">Лишилось карток: ${deck.length}</div><div class="flash" id="fc" onclick="flip()"><div class="q">${CARDS[deck[0]][0]}</div><div class="cnt">Натисни, щоб перевернути</div></div>
+  <div class="btns" id="kn" hidden><button class="go" onclick="know(1)">Знаю</button><button onclick="know(0)">Ще повторю</button></div>`;
+}
+function flip() { const c = CARDS[deck[0]]; $('#fc').innerHTML = `<div class="cnt">${c[0]}</div><div class="ans"><b>${c[1]}</b></div>${c[2] ? fig(c[2]) : ''}`; $('#kn').hidden = false; }
+function know(k) { const x = deck.shift(); if (!k) deck.push(x); drawCard(); }
+
+// Крок 6 — перевір себе
+function startTest() {
+  const take = (k, n) => shuffle(STEPS[k].tasks.map((_, i) => [k, i])).slice(0, n);
+  test = { q: [...take(1, 1), ...take(2, 1), ...take(3, 2), ...take(4, 2), ...take(5, 2)], res: [] };
+  testNext();
+}
+function testNext() {
+  if (test.res.length === test.q.length) return testEnd();
+  const [k, i] = test.q[test.res.length];
+  cur = { k, i, mode: 'test' };
+  $('#app').innerHTML = `<div class="top"><button class="back" onclick="if (confirm('Вийти? Цю спробу не буде зараховано.')) home()">← Вийти</button><h2>Перевір себе</h2></div>
+  <div class="cnt">Завдання ${test.res.length + 1} з ${test.q.length} · без підказок</div><div class="card" id="task"></div>`;
+  renderTask(STEPS[k].tasks[i]);
+}
+function testAnswer(ok) { test.res.push(ok); testNext(); }
+function testEnd() {
+  const score = test.res.filter(Boolean).length, r = { score, grade: gradeOf(score), at: Math.floor(Date.now() / 60000), n: ++store.attempts };
+  if (!store.best || score > store.best.score) store.best = r;
+  save();
+  const miss = [...new Set(test.q.filter((_, j) => !test.res[j]).map(([k]) => k))];
+  $('#app').innerHTML = `<div class="top"><button class="back" onclick="home()">← Кроки</button><h2>Перевір себе</h2></div>
+  <div class="card"><div class="q">Результат: <b>${score} з ${test.q.length}</b> · оцінка <b>${r.grade}</b></div>
+  ${score === test.q.length ? '<div class="good">🎉 Готовий до самостійної!</div>' : `<p>Помилки були в кроках:</p>${miss.map(k => `<div class="btns"><span>${k}. ${STEPS[k].title}</span><button onclick="openStep(${k})">Повторити цей крок</button></div>`).join('')}`}
+  <div class="btns"><button class="go" onclick="startTest()">Нова спроба</button><button class="go" onclick="showCard()">Картка для вчителя</button></div>
+  <p class="cnt">На картці — твій найкращий результат (${store.best.score} з 8, оцінка ${store.best.grade}).</p></div>`;
+}
+function showCard() {
+  const b = store.best;
+  $('#app').innerHTML = `<div class="top"><button class="back" onclick="home()">← Кроки</button><h2>Картка результату</h2></div>
+  <div class="res"><div class="cnt">Паралельні прямі · 7 клас · геометрія</div><div class="big">${esc(store.name)}, ${esc(store.cls)}</div>
+  <p>Кроки 0–5: <b>пройдено ✔</b><br>Перевір себе: <b>${b.score} з 8</b> — оцінка <b>${b.grade}</b><br>Найкраща спроба № ${b.n} · ${when(b.at)}<br>Усього спроб: ${store.attempts}</p>
+  <p>Код перевірки: <span class="code">${mkCode(b)}</span></p></div>
+  <p class="lead">📸 Зроби скріншот цієї картки і надішли вчителю.</p>`;
+}
+function teacher() {
+  $('#app').innerHTML = `<a class="back" href="#">← До тренажера</a><h1>Для вчителя: перевірка коду</h1><p class="lead">Введи ім’я, клас і код зі скріншота учня — сторінка покаже, чи код справжній.</p>
+  <div class="card"><label class="fld">Прізвище та ім’я<input id="tn" class="inp"></label><label class="fld">Клас<input id="tc" class="inp"></label><label class="fld">Код<input id="tk" class="inp" autocomplete="off"></label>
+  <button class="go" onclick="verify()">Перевірити</button><div id="fb"></div></div>`;
+}
+function verify() {
+  const [at, sn, h] = $('#tk').value.trim().toLowerCase().split('-');
+  const ok = at && sn && h && sign($('#tn').value, $('#tc').value, at + '-' + sn) === h;
+  if (!ok) return warn('❌ Код не збігається з цим іменем і класом. Перевір, чи правильно переписано ім’я, клас і код.');
+  const score = +sn[0];
+  $('#fb').innerHTML = `<div class="good">✅ Код справжній</div><p>Перевір себе: <b>${score} з 8</b> — оцінка <b>${gradeOf(score)}</b><br>Спроба № ${parseInt(sn.slice(1), 36)} · ${when(parseInt(at, 36))}</p>`;
+}
+window.addEventListener('hashchange', home);
+home();
+</script></body></html>
