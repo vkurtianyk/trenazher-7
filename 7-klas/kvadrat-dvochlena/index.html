@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="uk"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Квадрат двочлена · 7 клас</title>
+<style>:root{--bg:#faf7f2;--card:#fff;--ink:#1f2340;--muted:#6b6f85;--acc:#4f46e5;--accs:#e8e7ff;--ok:#16a34a;--bad:#dc2626;--gold:#f59e0b}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:18px/1.5 "Segoe UI",Roboto,Arial,sans-serif}
+#app{max-width:860px;margin:0 auto;padding:16px}
+h1{font-size:1.6em;margin:.3em 0}.lead{color:var(--muted)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;margin-top:12px}
+.topic{position:relative;text-align:left;background:var(--card);border:2px solid #e6e3ee;border-radius:16px;padding:14px 14px 34px;font:inherit;color:inherit;cursor:pointer;display:flex;flex-direction:column;gap:2px}
+.topic:hover{border-color:var(--acc)}.topic:disabled{opacity:.55;cursor:default}.topic:disabled:hover{border-color:#e6e3ee}
+.topic .no{background:var(--acc);color:#fff;border-radius:50%;width:30px;height:30px;display:grid;place-items:center;font-weight:700;margin-bottom:4px}
+.topic small{color:var(--muted)}.stars{position:absolute;right:12px;bottom:8px;color:var(--gold);font-size:1.1em}
+.foot{color:var(--muted);font-size:.85em;margin-top:16px}.foot a{color:var(--acc)}
+.top{display:flex;align-items:center;gap:12px}.top h2{margin:.2em 0;font-size:1.3em}
+button{font:inherit;border:0;border-radius:12px;padding:.5em .9em;background:#ecebf3;color:var(--ink);cursor:pointer}
+button:hover{filter:brightness(.96)}
+.back{background:transparent;color:var(--acc);font-weight:700;padding-left:0;text-decoration:none;display:inline-block}
+.link{background:transparent;color:var(--acc);padding:0 .2em;text-decoration:underline}
+.go{background:var(--acc);color:#fff;font-weight:700;margin-top:12px}
+.card{background:var(--card);border-radius:16px;padding:16px;margin-top:14px;box-shadow:0 4px 18px rgba(31,35,64,.06)}
+.cnt{color:var(--muted);font-size:.85em}.q{font-size:1.25em;margin:.3em 0 .6em}
+.btns{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px}.btns .go{margin-top:0}
+.good{color:var(--ok);font-weight:700;font-size:1.15em;margin:.6em 0}
+.bad{color:var(--bad);margin:.6em 0}.hint{background:#fff8e1;border-radius:10px;padding:.5em .8em;margin:.6em 0}
+.sol{background:#eefbf2;border-radius:10px;padding:.5em .9em;margin:.6em 0}.sol ol{margin:.3em 0;padding-left:1.3em}
+.opts{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px;margin-top:10px}.opts button{font-weight:700;padding:.75em .9em;min-height:52px}
+.pills{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0}.pills button{padding:.35em .7em;font-weight:700}.pills .on{outline:3px solid var(--acc)}.pills .ok{background:#dcfce7;color:var(--ok)}
+.inp{width:100%;font-size:1.25em;padding:.4em .6em;border:2px solid #d9d6e6;border-radius:12px;outline:none;margin-top:4px}.inp:focus{border-color:var(--acc)}
+label.fld{display:block;margin:8px 0;font-weight:700}
+.kb{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}.kb button{min-width:46px;font-size:1.15em;font-weight:700;padding:.35em .6em}
+.prev{color:var(--muted);min-height:1.4em}
+.intro{background:var(--card);border-radius:16px;padding:6px 16px 12px;margin-top:10px;box-shadow:0 4px 18px rgba(31,35,64,.06)}
+.big{font-size:1.35em;font-weight:700;background:var(--accs);border-radius:10px;padding:.3em .6em;display:inline-block}
+.fig{width:100%;max-width:420px;height:auto;display:block;background:#fff;border:2px solid #eeeaf6;border-radius:12px;margin:6px auto}
+.fig .fl{font-size:30px;text-anchor:middle;dominant-baseline:central}
+.fig .zl{font:800 34px sans-serif;text-anchor:middle;dominant-baseline:central;fill:var(--ink)}
+.fig .sd{font:700 24px sans-serif;text-anchor:middle;dominant-baseline:central;fill:var(--acc)}
+.fr{color:#e11d48;font-weight:700}.fd{color:#b45309;font-weight:700}.ft{color:#9333ea;font-weight:700}
+.line{min-height:56px;border:2px dashed #d9d6e6;border-radius:12px;padding:6px;display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:8px 0}
+.tiles{display:flex;flex-wrap:wrap;gap:6px}.tiles button,.line button{font-weight:700;background:#fff;border:2px solid #c7c4f5}
+.video{position:relative;padding-top:56.25%;margin:10px 0;border-radius:12px;overflow:hidden;background:#000}.video iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.rcard{border:3px solid var(--acc);border-radius:16px;padding:16px;background:#fff}.rcard .big{font-size:1.6em;font-weight:800;background:none;padding:0}
+.code{font:700 1.3em ui-monospace,monospace;letter-spacing:.05em;white-space:nowrap;background:var(--accs);border-radius:8px;padding:.1em .4em}
+.c0{color:#e11d48}.c1{color:#2563eb}.c2{color:#16a34a}.c3{color:#9333ea}
+.viz{background:#fff;border:2px solid #eeeaf6;border-radius:12px;padding:10px 12px;margin:.6em 0;color:var(--ink)}
+.ex{position:relative;font-size:1.3em;font-weight:700;padding-top:66px;white-space:nowrap;overflow-x:auto}
+.ex svg{position:absolute;left:0;top:0;width:1px;height:1px;overflow:visible;pointer-events:none}
+.ar{opacity:0;transition:opacity .4s}.ar.on{opacity:1}.res{font-size:1.3em;font-weight:700}
+</style></head><body><div id="app"></div>
+<script src="../../algebra.js"></script>
+<script>
+// ===== Клумба (a + b) × (a + b): троянди a², ромашки 2ab, тюльпани b² =====
+// o: { hl: ['r','d','t'] — які ділянки яскраві, letters — підписи a, b замість чисел }
+function bed(a, b, o = {}) {
+  const c = 260 / (a + b), X = 46, Y = 46, FL = { r: '🌹', d: '🌼', t: '🌷' }, FILL = { r: '#ffe4e6', d: '#fef3c7', t: '#f3e8ff' }, NAME = { r: 'a²', d: 'ab', t: 'b²' };
+  const zones = [['r', 0, 0, a, a], ['d', a, 0, b, a], ['d', 0, a, a, b], ['t', a, a, b, b]];
+  let s = `<svg class="fig" viewBox="0 0 320 320" role="img" aria-label="Квадратна клумба зі стороною ${o.letters ? 'a + b' : a + ' + ' + b}">`;
+  zones.forEach(([k, x, y, w, h]) => {
+    const on = !o.hl || o.hl.includes(k), op = on ? 1 : 0.3;
+    s += `<rect x="${X + x * c}" y="${Y + y * c}" width="${w * c}" height="${h * c}" fill="${FILL[k]}" opacity="${op}" stroke="#1f2340" stroke-width="3"/>`;
+    if (o.letters) s += `<text class="zl" x="${X + (x + w / 2) * c}" y="${Y + (y + h / 2) * c}" opacity="${op}">${NAME[k]}</text>`;
+    else for (let i = 0; i < w; i++) for (let j = 0; j < h; j++) s += `<text class="fl" x="${X + (x + i + 0.5) * c}" y="${Y + (y + j + 0.5) * c}" opacity="${op}">${FL[k]}</text>`;
+  });
+  const [la, lb] = o.letters ? ['a', 'b'] : [a, b];
+  s += `<text class="sd" x="${X + a * c / 2}" y="24">${la}</text><text class="sd" x="${X + (a + b / 2) * c}" y="24">${lb}</text>`;
+  s += `<text class="sd" x="22" y="${Y + a * c / 2}">${la}</text><text class="sd" x="22" y="${Y + (a + b / 2) * c}">${lb}</text>`;
+  return s + '</svg>';
+}
+
+// ===== Генератор прикладів =====
+// Вираз (перший ± другий)²; F, S — одночлени [коефіцієнт, {буква: показник}], sg — знак
+function sqTask(F, S, sg) {
+  const ans = `(${ms(F)}${sg < 0 ? '-' : '+'}${ms(S)})^2`, F2 = tpow(F, 2), S2 = tpow(S, 2), FS = tmul(F, S), M = tmul([2 * sg, {}], FS);
+  return { F, S, sg, ans, F2, S2, M, FS,
+    hints: [`${sg > 0 ? '(a + b)² = a² + 2ab + b²' : '(a − b)² = a² − 2ab + b²'}. Тут перший = <span class="fr">${mf(F)}</span>, другий = <span class="ft">${mf(S)}</span>.`,
+      `Квадрат першого: (${mf(F)})² = ${mf(F2)}. Далі — подвоєний добуток і квадрат другого.`],
+    sol: `<ol><li>Квадрат першого: (${mf(F)})² = <span class="fr">${mf(F2)}</span></li><li>${sg > 0 ? 'Плюс' : 'Мінус'} подвоєний добуток: 2 · ${mf(F)} · ${mf(S)} = <span class="fd">${mf(tmul([2, {}], FS))}</span></li><li>Плюс квадрат другого: (${mf(S)})² = <span class="ft">${mf(S2)}</span></li></ol>Відповідь: <b>${P(ans)}</b>` };
+}
+const LET = () => pick(['x', 'y', 'a', 'b']);
+function gen(type) {
+  if (type === 'num') {
+    const base = pick([20, 30, 40, 50, 60, 70, 80, 90, 100]), d = pick([1, 2, -1, -2]), n = base + d, D = Math.abs(d), op = d > 0 ? '+' : '−';
+    return { kind: 'num', q: `Обчисліть зручно за формулою: <b>${n}²</b>`, a: n * n,
+      wrong: v => (v === base * base + d * d ? 'Ти пропустив подвоєний добуток 2 · ' + base + ' · ' + D + ' — згадай ромашки 🌼' : 'Неправильно. Спробуй підказку.'),
+      hints: [`Запиши ${n} як ${base} ${op} ${D}.`, `(${base} ${op} ${D})² = ${base}² ${op} 2 · ${base} · ${D} + ${D}²`],
+      sol: `(${base} ${op} ${D})² = ${base * base} ${op} ${2 * base * D} + ${D * D} = <b>${n * n}</b>` };
+  }
+  const x = LET();
+  if (type === 'rev') {
+    const t = sqTask([ri(1, 3), { [x]: 1 }], [ri(1, 9), {}], pick([1, -1]));
+    return { ...t, kind: 'sq', q: `Запишіть у вигляді квадрата двочлена: <b>${P(t.ans)}</b>`,
+      hints: ['Знайди два члени-квадрати: який вираз у квадраті дає перший член, а який — останній?',
+        `${mf(t.F2)} = (${mf(t.F)})², &nbsp; ${mf(t.S2)} = (${mf(t.S)})². Перевір середній член: 2 · ${mf(t.F)} · ${mf(t.S)} = ${mf(tmul([2, {}], t.FS))}.`],
+      sol: `${P(t.ans)} = <span class="fr">(${mf(t.F)})²</span> ${t.sg > 0 ? '+' : '−'} <span class="fd">2 · ${mf(t.F)} · ${mf(t.S)}</span> + <span class="ft">(${mf(t.S)})²</span> = <b>${pretty(t.ans)}</b>` };
+  }
+  let F, S, sg = pick([1, -1]);
+  if (type === 'xn') { F = [1, { [x]: 1 }]; S = [ri(1, 9), {}]; sg = 1; }
+  if (type === 'xn-') { F = [1, { [x]: 1 }]; S = [ri(1, 9), {}]; sg = -1; }
+  if (type === 'kxn') { F = [ri(2, 5), { [x]: 1 }]; S = [ri(1, 7), {}]; }
+  if (type === 'kxmy') { const [p, q] = shuffle(['x', 'y', 'a', 'b']).slice(0, 2); F = [ri(1, 4), { [p]: pick([1, 1, 2]) }]; S = [ri(1, 5), { [q]: 1 }]; }
+  return { ...sqTask(F, S, sg), kind: 'expr', q: `Піднесіть до квадрата: <b>${pretty(`(${ms(F)}${sg < 0 ? '-' : '+'}${ms(S)})^2`)}</b>` };
+}
+// Типові помилки при розкритті квадрата
+function exprMistake(t, U) {
+  const T = ts => parse(poly(ts)), half = tmul([t.sg, {}], t.FS), negM = [-t.M[0], t.M[1]];
+  if (peq(U, T([t.F2, t.S2])) || peq(U, T([t.F2, [-t.S2[0], t.S2[1]]]))) return 'Ти пропустив подвоєний добуток 2 · перший · другий — згадай 12 ромашок 🌼!';
+  if (peq(U, T([t.F2, half, t.S2]))) return `Середній член треба подвоїти: 2 · ${mf(t.F)} · ${mf(t.S)}.`;
+  if (peq(U, T([t.F2, t.M, [-t.S2[0], t.S2[1]]]))) return `Квадрат другого завжди з «+»: (${t.sg < 0 ? '−' : ''}${mf(t.S)})² = ${mf(t.S2)}.`;
+  if (peq(U, T([t.F2, negM, t.S2]))) return `Перевір знак середнього члена: у квадраті ${t.sg > 0 ? 'суми він «+»' : 'різниці він «−»'}.`;
+  if (t.F[0] !== 1 && peq(U, T([[t.F[0], t.F2[1]], t.M, t.S2]))) return `Число теж підносимо до квадрата: (${mf(t.F)})² = ${mf(t.F2)}.`;
+  if (t.S[0] !== 1 && peq(U, T([t.F2, t.M, [2 * t.S[0], t.S2[1]]]))) return `${t.S[0]}² — це ${t.S[0]} · ${t.S[0]} = ${t.S[0] ** 2}, а не ${2 * t.S[0]}.`;
+  return 'Неправильно. Спробуй підказку.';
+}
+
+// ===== Кроки =====
+const S0 = [
+  { kind: 'num', q: 'Обчисли: <b>(3 + 2)²</b>', a: 25, hints: ['Спершу дія в дужках.', '3 + 2 = 5, а 5² = 5 · 5.'], sol: '(3 + 2)² = 5² = <b>25</b>' },
+  { kind: 'num', q: 'Обчисли: <b>3² + 2²</b>', a: 13, hints: ['Кожне число окремо підносимо до квадрата.', '3² = 9, 2² = 4.'], sol: '9 + 4 = <b>13</b>' },
+  { kind: 'num', q: 'Виходить, (3 + 2)² ≠ 3² + 2². На скільки (3 + 2)² більше?', a: 12, hints: ['Відніми одне від одного.', '25 − 13'], sol: '25 − 13 = <b>12</b>. Куди поділися 12? Дізнаєшся на клумбі 🌷 у наступному кроці!' },
+  { kind: 'num', q: 'Ще раз: на скільки (5 + 1)² більше, ніж 5² + 1²?', a: 10, hints: ['(5 + 1)² = 6² = 36.', '5² + 1² = 25 + 1 = 26.'], sol: '36 − 26 = <b>10</b>. Помітив? 12 = 2 · 3 · 2, а 10 = 2 · 5 · 1 — подвоєний добуток чисел!' }
+];
+const S1 = [
+  { kind: 'num', q: 'Клумба — квадрат зі стороною 3 + 2 = 5. Скільки всього квітів?', fig: bed(3, 2), a: 25, hints: ['Квітів стільки, скільки клітинок.', '5 рядів по 5 квітів.'], sol: '5 · 5 = 5² = <b>25</b> — це і є (3 + 2)².' },
+  { kind: 'num', q: 'Скільки троянд 🌹?', fig: bed(3, 2, { hl: ['r'] }), a: 9, hints: ['Троянди ростуть у квадраті.', 'Сторона квадрата — 3.'], sol: '3 × 3 = 3² = <b>9</b>. Це <span class="fr">квадрат першого</span>.' },
+  { kind: 'num', q: 'Скільки тюльпанів 🌷?', fig: bed(3, 2, { hl: ['t'] }), a: 4, hints: ['Тюльпани теж ростуть у квадраті.', 'Сторона квадрата — 2.'], sol: '2 × 2 = 2² = <b>4</b>. Це <span class="ft">квадрат другого</span>.' },
+  { kind: 'num', q: 'Скільки ромашок 🌼?', fig: bed(3, 2, { hl: ['d'] }), a: 12, hints: ['Ромашки ростуть у двох однакових прямокутниках.', 'Кожен прямокутник 3 × 2.'], sol: '2 · 3 · 2 = <b>12</b>. Ось де поділися ті 12! Це <span class="fd">подвоєний добуток</span>.' },
+  { kind: 'num', q: 'Нова клумба зі стороною 4 + 1. Скільки ромашок 🌼?', fig: bed(4, 1, { hl: ['d'] }), a: 8, hints: ['Два прямокутники з ромашками.', 'Кожен прямокутник 4 × 1.'], sol: '2 · 4 · 1 = <b>8</b>.' },
+  { kind: 'choice', q: 'Тепер замість чисел — букви. Чому дорівнює площа всієї клумби (a + b)²?', fig: bed(3, 2, { letters: 1 }), opts: ['a² + 2ab + b²', 'a² + b²', 'a² + ab + b²', '2a + 2b'],
+    why: 'Порахуй ділянки: один квадрат a², один квадрат b² і ДВА прямокутники ab.', hints: ['Скільки на клумбі прямокутників ab?', 'a² + ab + ab + b²'], sol: 'a² + ab + ab + b² = <b>a² + 2ab + b²</b>.' }
+];
+const S2 = [
+  { kind: 'choice', q: '(a + b)(a + b) = a² + ab + ba + b². Скільки буде ab + ba?', opts: ['2ab', 'ab', 'a²b²', '2a + 2b'], why: 'ab і ba — однакові (від перестановки множників добуток не змінюється), тож ab + ba = 2ab.', hints: ['Чи однакові ab і ba?', 'ab + ab = ?'], sol: 'ab = ba, тому ab + ba = <b>2ab</b>.' },
+  { kind: 'choice', q: 'Чому дорівнює (a − b)²?', opts: ['a² − 2ab + b²', 'a² − b²', 'a² − 2ab − b²', 'a² + 2ab + b²'], why: 'Подивись на стрілочки вгорі: a² − ab − ab + b².', hints: ['(a − b)² = (a − b)(a − b). Помнож кожен на кожен.', 'Останній член: (−b) · (−b) = ?'], sol: 'a² − ab − ab + b² = <b>a² − 2ab + b²</b>.' },
+  { kind: 'choice', q: 'Чому в (a − b)² останній член +b², а не −b²?', opts: ['(−b) · (−b) = +b²', 'Бо так домовились', 'Бо b завжди додатне'], why: 'Мінус на мінус дає плюс: (−b) · (−b) = +b².', hints: ['Останній член — це (−b) · (−b).', 'Мінус на мінус дає…'], sol: '<b>(−b) · (−b) = +b²</b> — мінус на мінус дає плюс.' },
+  { kind: 'choice', q: 'Чим відрізняються формули (a + b)² і (a − b)²?', opts: ['Лише знаком середнього члена', 'Знаком b²', 'Нічим'], why: 'Порівняй: a² + 2ab + b² і a² − 2ab + b². Квадрати однакові, різний лише знак 2ab.', hints: ['Запиши обидві формули одна під одною.', 'a² + 2ab + b² і a² − 2ab + b²'], sol: '<b>Лише знаком середнього члена</b>: +2ab або −2ab.' }
+];
+const W1 = 'квадрат першого', W2p = 'плюс подвоєний добуток першого і другого', W2m = 'мінус подвоєний добуток першого і другого', W3 = 'плюс квадрат другого';
+const S3 = [
+  { kind: 'tiles', q: 'Склади формулу словами: <b>(a + b)² =</b>', tiles: [W1, W2p, W3], extra: ['плюс добуток першого і другого', 'мінус квадрат другого'], sol: '(a + b)² = <b>квадрат першого, плюс подвоєний добуток першого і другого, плюс квадрат другого</b>.' },
+  { kind: 'tiles', q: 'Склади формулу словами: <b>(a − b)² =</b>', tiles: [W1, W2m, W3], extra: [W2p, 'мінус квадрат другого'], sol: '(a − b)² = <b>квадрат першого, мінус подвоєний добуток першого і другого, плюс квадрат другого</b>.' },
+  { kind: 'tiles', q: 'Склади відповідь: <b>(2x + 3)² =</b>', tiles: ['4x²', '+ 12x', '+ 9'], extra: ['2x²', '+ 6x', '+ 6'], sol: '(2x)² = 4x², 2 · 2x · 3 = 12x, 3² = 9: <b>4x² + 12x + 9</b>.' },
+  { kind: 'tiles', q: 'Склади відповідь: <b>(x − 5)² =</b>', tiles: ['x²', '− 10x', '+ 25'], extra: ['− 25', '− 5x', '+ 10x'], sol: 'x², 2 · x · 5 = 10x зі знаком «−», 5² = 25: <b>x² − 10x + 25</b>.' }
+];
+const S4 = ['xn', 'xn', 'xn-', 'xn-', 'kxn', 'kxn', 'kxmy', 'rev', 'rev', 'num'].map(type => ({ kind: 'gen', type }));
+const FORMULA = `<p class="big"><span class="fr">a²</span> + <span class="fd">2ab</span> + <span class="ft">b²</span></p>`;
+const STEPS = [
+  { title: 'Загадка: де поділися 12?', sub: 'числа замість букв', tasks: S0,
+    intro: '<p>Багато хто думає, що <b>(a + b)² = a² + b²</b>. Перевір на числах!</p>' },
+  { title: 'Клумба 🌷', sub: 'доведення малюнком', tasks: S1,
+    intro: `<p>Квадратна клумба зі стороною <b>a + b</b>. На ній 🌹 троянди (квадрат a × a), 🌷 тюльпани (квадрат b × b) і 🌼 ромашки — <b>два</b> прямокутники a × b. Уся клумба: (a + b)² = ${FORMULA}</p>` },
+  { title: 'Доведення множенням', sub: 'кожен член на кожен', tasks: S2,
+    intro: `<p>(a + b)² = (a + b)(a + b). Множимо кожен член першої дужки на кожен член другої — натискай «Далі →»:</p>
+    ${arrowsHTML([{ k: [1, { a: 1 }], p: [[1, { a: 1 }], [1, { b: 1 }]] }, { k: [1, { b: 1 }], p: [[1, { a: 1 }], [1, { b: 1 }]] }], 1)}<p>ab + ab = 2ab, отже <b>(a + b)² = a² + 2ab + b²</b>.</p>
+    <p>Так само для різниці (a − b)² = (a − b)(a − b):</p>
+    ${arrowsHTML([{ k: [1, { a: 1 }], p: [[1, { a: 1 }], [-1, { b: 1 }]] }, { neg: true, k: [1, { b: 1 }], p: [[1, { a: 1 }], [-1, { b: 1 }]] }], 1)}<p>−ab − ab = −2ab, отже <b>(a − b)² = a² − 2ab + b²</b>.</p>` },
+  { title: 'Формула словами', sub: 'запам’ятай назавжди', tasks: S3,
+    intro: `<p class="big">(a ± b)² = <span class="fr">a²</span> ± <span class="fd">2ab</span> + <span class="ft">b²</span></p><p><span class="fr">Квадрат першого</span>, <span class="fd">плюс (мінус) подвоєний добуток першого і другого</span>, <span class="ft">плюс квадрат другого</span>.</p><p>Склади формулу з карток: натискай їх у правильному порядку. Натисни картку в рядку відповіді, щоб прибрати її.</p>` },
+  { title: 'Тренування', sub: '10 прикладів, щоразу нові', tasks: S4,
+    intro: `<p>Кожен приклад — нові числа. Пам’ятай: ${FORMULA.replace('<p class="big">', '<span class="big">').replace('</p>', '</span>')}</p>` },
+  { title: 'Перевір себе', sub: '8 завдань без підказок, оцінка' }
+];
+const TEST = () => [[2, ri(0, S2.length - 1)], [3, ri(0, S3.length - 1)], ...['xn', 'xn-', 'kxn', 'kxmy', 'rev', 'num'].map(type => [4, { kind: 'gen', type }])];
+const VIDEOS = ['Oqb1Z91Qhn8', 'IJ_Nbshn-3k'];
+
+// ===== Як показати завдання =====
+const num = s => { const t = s.replace(/\s/g, ''); return /^\d+$/.test(t) ? +t : NaN; };
+const KB = ['x', 'y', 'a', 'b', '²', '(', ')', '+', '−', '⌫'];
+const RENDER = {
+  num: t => ({ ...t, body: (t.fig || '') + `<input id="f0" class="inp" inputmode="numeric" autocomplete="off" placeholder="Число"><button class="go" onclick="cur.R.act()">Перевірити</button>`,
+    act: () => { const v = num($('#f0').value); if (isNaN(v)) return warn('Введи число'); answer(v === t.a, t.wrong ? t.wrong(v) : 'Неправильно. Спробуй підказку.'); } }),
+  choice: t => ({ ...t, body: (t.fig || '') + `<div class="opts">${shuffle(t.opts).map(o => `<button data-v="${o}" onclick="cur.R.act(this.dataset.v)">${o}</button>`).join('')}</div>`,
+    act: v => answer(v === t.opts[0], `Ні. ${t.why}`) }),
+  tiles: t => {
+    const pool = shuffle([...t.tiles, ...t.extra]); let line = [];
+    const draw = () => {
+      $('#line').innerHTML = line.map((w, i) => `<button onclick="cur.R.del(${i})">${w}</button>`).join('') || '<span class="cnt">Натискай картки нижче</span>';
+      $('#pool').innerHTML = pool.map((w, i) => (line.includes(w) ? '' : `<button onclick="cur.R.add(${i})">${w}</button>`)).join('');
+    };
+    return { ...t, hints: ['Спершу — квадрат першого, наприкінці — квадрат другого.', 'Середній член — ПОДВОЄНИЙ добуток. Знак у нього такий, як у дужках.'],
+      body: '<div class="line" id="line"></div><div class="tiles" id="pool"></div><button class="go" onclick="cur.R.act()">Перевірити</button>',
+      init: draw, add: i => { line.push(pool[i]); draw(); }, del: i => { line.splice(i, 1); draw(); },
+      act: () => { if (!line.length) return warn('Склади відповідь з карток'); answer(String(line) === String(t.tiles), 'Не так. Порядок: квадрат першого → подвоєний добуток → квадрат другого. Перевір знаки.'); } };
+  },
+  gen: t => { const g = gen(t.type); return RENDER[g.kind](g); },
+  expr: t => ({ ...t, body: exprInput('Наприклад: 4x^2 + 12x + 9'),
+    act: () => {
+      const v = $('#f0').value; let U; if (!v.trim()) return;
+      try { U = parse(v); } catch (e) { return warn('⚠️ ' + e.message + '. Приклад запису: 4x^2 + 12x + 9'); }
+      if (peq(U, parse(t.ans))) return isStandard(v) ? answer(true) : warn('Значення правильне, але розкрий дужки: запиши відповідь як многочлен без дужок.');
+      answer(false, exprMistake(t, U));
+    } }),
+  sq: t => ({ ...t, body: exprInput('Наприклад: (x + 3)²'),
+    act: () => {
+      const v = $('#f0').value; let U; if (!v.trim()) return;
+      try { U = parse(v); } catch (e) { return warn('⚠️ ' + e.message + '. Приклад запису: (x + 3)^2'); }
+      if (!/^\(.*\)\^2$/.test(normalize(v))) return warn('Запиши відповідь як квадрат двочлена: ( … )²');
+      answer(peq(U, parse(t.ans)), `Перевір: якщо розкрити твою відповідь, вийде ${fmt(U)}, а треба ${P(t.ans)}.`);
+    } })
+};
+function exprInput(ph) {
+  return `<input id="f0" class="inp" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="${ph}" oninput="preview()">
+  <div class="kb">${KB.map(k => `<button onclick="key('${k}')">${k}</button>`).join('')}</div><div class="prev" id="prev"></div><button class="go" onclick="cur.R.act()">Перевірити</button>`;
+}
+function key(k) {
+  const inp = $('#f0'), s = inp.selectionStart ?? inp.value.length, e = inp.selectionEnd ?? s;
+  if (k === '⌫') { const a = s === e ? Math.max(0, s - 1) : s; inp.value = inp.value.slice(0, a) + inp.value.slice(e); inp.setSelectionRange(a, a); }
+  else { const t = k === '−' ? '-' : k; inp.value = inp.value.slice(0, s) + t + inp.value.slice(e); inp.setSelectionRange(s + t.length, s + t.length); }
+  inp.focus(); preview();
+}
+function preview() { const v = $('#f0').value; $('#prev').textContent = v ? 'Ти пишеш: ' + pretty(normalize(v)) : ''; }
+
+// ===== Стан =====
+const $ = s => document.querySelector(s);
+const KEY = 'alg7-kvadrat-dvochlena';
+let store = { name: '', cls: '', done: {}, attempts: 0, best: null };
+try { Object.assign(store, JSON.parse(localStorage.getItem(KEY) || '{}')); } catch (e) {}
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(store)); } catch (e) {} };
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const solved = k => store.done[k] || [];
+const LAST = STEPS.length - 1;
+const complete = k => (k < LAST ? STEPS[k].tasks.every((_, i) => solved(k).includes(i)) : !!store.best);
+const unlocked = k => [...Array(k).keys()].every(complete);
+let cur = null, test = null;
+const head = k => `<div class="top"><button class="back" onclick="home()">← Кроки</button><h2>${k}. ${STEPS[k].title}</h2></div>`;
+
+// ===== Код результату для вчителя =====
+const SALT = 'alg7-kvadrat-2026';
+const norm = s => s.trim().toLowerCase().replace(/\s+/g, ' ');
+function h32(s) { let h = 2166136261; for (const c of s) { h ^= c.codePointAt(0); h = Math.imul(h, 16777619) >>> 0; } return h; }
+const sign = (name, cls, p) => (h32(norm(name) + '|' + norm(cls) + '|' + p + SALT) % 1679616).toString(36).padStart(4, '0');
+function mkCode(r) { const p = r.at.toString(36).padStart(6, '0') + '-' + r.score + r.n.toString(36).padStart(2, '0'); return (p + '-' + sign(store.name, store.cls, p)).toUpperCase(); }
+const when = at => new Date(at * 60000).toLocaleString('uk-UA', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+const gradeOf = score => Math.max(1, Math.round(score * 1.5));
+
+// ===== Екрани =====
+function home() {
+  cur = null;
+  if (location.hash === '#vchytel') return teacher();
+  if (!store.name) return nameForm();
+  $('#app').innerHTML = `<a class="back" href="../../">← Алгебра 7 клас</a><h1>Квадрат двочлена</h1>
+  <p class="lead">7 клас · алгебра · (a + b)² і (a − b)². Учень: <b>${esc(store.name)}</b>, ${esc(store.cls)} <button class="link" onclick="changeName()">змінити</button></p>
+  <div class="grid">${STEPS.map((s, k) => {
+    const lock = !unlocked(k), prog = s.tasks ? `${solved(k).length}/${s.tasks.length}` : '';
+    return `<button class="topic" ${lock ? 'disabled' : ''} onclick="openStep(${k})"><span class="no">${k}</span><b>${s.title}</b><small>${s.sub}</small><span class="stars">${complete(k) ? '✔' : lock ? '🔒' : prog}</span></button>`;
+  }).join('')}</div>
+  <div class="btns"><button onclick="videos()">📺 Відеопояснення (додатково)</button>${store.best ? '<button class="go" onclick="showCard()">Моя картка результату для вчителя</button>' : ''}</div>
+  <p class="foot">Кроки обов’язкові: кожен наступний відкривається, коли пройдено попередній. Прогрес зберігається лише на цьому пристрої. · <a href="#vchytel">Для вчителя</a></p>`;
+}
+function videos() {
+  $('#app').innerHTML = `<div class="top"><button class="back" onclick="home()">← Кроки</button><h2>📺 Відеопояснення</h2></div><p class="lead">Подивись, якщо хочеш почути пояснення ще раз. Відео з YouTube.</p>
+  ${VIDEOS.map(id => `<div class="video"><iframe src="https://www.youtube-nocookie.com/embed/${id}" title="Відео: квадрат двочлена" allow="encrypted-media; picture-in-picture" allowfullscreen loading="lazy"></iframe></div>`).join('')}`;
+}
+function nameForm() {
+  $('#app').innerHTML = `<a class="back" href="../../">← Алгебра 7 клас</a><h1>Квадрат двочлена</h1><p class="lead">7 клас · алгебра. Напиши своє ім’я та клас — вони будуть на картці результату для вчителя.</p>
+  <div class="card"><label class="fld">Прізвище та ім’я<input id="nm" class="inp" autocomplete="name"></label><label class="fld">Клас<input id="cl" class="inp" placeholder="Наприклад: 7-А"></label>
+  <button class="go" onclick="setName()">Почати</button><div id="fb"></div></div><p class="foot"><a href="#vchytel">Для вчителя</a></p>`;
+}
+function setName() {
+  const n = $('#nm').value.trim().replace(/\s+/g, ' '), c = $('#cl').value.trim();
+  if (n.split(' ').length < 2 || !c) return ($('#fb').innerHTML = '<div class="bad">Напиши прізвище та ім’я (два слова) і клас.</div>');
+  store.name = n; store.cls = c; save(); home();
+}
+function changeName() {
+  if (!confirm('Змінити ім’я? Увесь прогрес на цьому пристрої буде скинуто.')) return;
+  store = { name: '', cls: '', done: {}, attempts: 0, best: null }; save(); home();
+}
+function openStep(k, i) {
+  if (!unlocked(k)) return home();
+  if (k === LAST) return startTest();
+  const ts = STEPS[k].tasks, d = solved(k);
+  if (i === undefined) i = Math.max(0, ts.findIndex((_, j) => !d.includes(j)));
+  cur = { k, i, mode: 'practice', hint: 0 };
+  $('#app').innerHTML = head(k) + `<div class="intro">${STEPS[k].intro}</div><div class="pills">${ts.map((_, j) => `<button class="${j === i ? 'on' : ''} ${d.includes(j) ? 'ok' : ''}" onclick="openStep(${k},${j})">${k}.${j + 1}</button>`).join('')}</div><div class="card" id="task"></div>`;
+  renderTask(ts[i]);
+}
+function renderTask(t) {
+  cur.R = RENDER[t.kind](t);
+  $('#task').innerHTML = `<div class="q">${cur.R.q}</div>${cur.R.body}` + (cur.mode === 'practice'
+    ? `<div class="btns"><button id="hb" onclick="showHint()">💡 Підказка 1</button><button id="sb" onclick="showSol()">Показати розв’язання</button></div><div id="hint"></div>` : '') + '<div id="fb"></div>';
+  if (cur.R.init) cur.R.init();
+  const f = $('#f0'); if (f) f.addEventListener('keydown', e => { if (e.key === 'Enter') cur.R.act(); });
+}
+function showHint() {
+  cur.hint++; $('#hint').innerHTML = cur.R.hints.slice(0, cur.hint).map((h, j) => `<div class="hint">💡 ${j + 1}. ${h}</div>`).join('');
+  if (cur.hint >= 2) $('#hb').remove(); else $('#hb').textContent = '💡 Підказка 2';
+}
+function showSol() { $('#sb').remove(); $('#task').insertAdjacentHTML('beforeend', `<div class="sol"><b>Розв’язання:</b> ${cur.R.sol}</div>`); }
+const warn = msg => ($('#fb').innerHTML = `<div class="bad">${msg}</div>`);
+function answer(ok, msg) {
+  if (cur.mode === 'test') return testAnswer(ok);
+  if (!ok) return warn(msg);
+  const d = store.done[cur.k] = solved(cur.k); if (!d.includes(cur.i)) d.push(cur.i); save();
+  document.querySelectorAll('.pills button')[cur.i].classList.add('ok');
+  const nx = STEPS[cur.k].tasks.findIndex((_, j) => !d.includes(j));
+  $('#fb').innerHTML = '<div class="good">✅ Правильно!</div>' + (nx >= 0 ? `<button class="go" onclick="openStep(${cur.k},${nx})">Далі →</button>`
+    : `<div class="good">🎉 Крок ${cur.k} пройдено!</div><button class="go" onclick="openStep(${cur.k + 1})">${cur.k + 1}. ${STEPS[cur.k + 1].title} →</button>`);
+}
+
+// Останній крок — перевір себе
+function startTest() { test = { q: TEST(), res: [] }; testNext(); }
+function testNext() {
+  if (test.res.length === test.q.length) return testEnd();
+  const [k, t] = test.q[test.res.length];
+  cur = { k, mode: 'test' };
+  $('#app').innerHTML = `<div class="top"><button class="back" onclick="if (confirm('Вийти? Цю спробу не буде зараховано.')) home()">← Вийти</button><h2>Перевір себе</h2></div>
+  <div class="cnt">Завдання ${test.res.length + 1} з ${test.q.length} · без підказок</div><div class="card" id="task"></div>`;
+  renderTask(typeof t === 'number' ? STEPS[k].tasks[t] : t);
+}
+function testAnswer(ok) { test.res.push(ok); testNext(); }
+function testEnd() {
+  const score = test.res.filter(Boolean).length, r = { score, grade: gradeOf(score), at: Math.floor(Date.now() / 60000), n: ++store.attempts };
+  if (!store.best || score > store.best.score) store.best = r;
+  save();
+  const miss = [...new Set(test.q.filter((_, j) => !test.res[j]).map(([k]) => k))];
+  $('#app').innerHTML = `<div class="top"><button class="back" onclick="home()">← Кроки</button><h2>Перевір себе</h2></div>
+  <div class="card"><div class="q">Результат: <b>${score} з ${test.q.length}</b> · оцінка <b>${r.grade}</b></div>
+  ${score === test.q.length ? '<div class="good">🎉 Формулу засвоєно!</div>' : `<p>Помилки були в кроках:</p>${miss.map(k => `<div class="btns"><span>${k}. ${STEPS[k].title}</span><button onclick="openStep(${k})">Повторити цей крок</button></div>`).join('')}`}
+  <div class="btns"><button class="go" onclick="startTest()">Нова спроба</button><button class="go" onclick="showCard()">Картка для вчителя</button></div>
+  <p class="cnt">На картці — твій найкращий результат (${store.best.score} з 8, оцінка ${store.best.grade}).</p></div>`;
+}
+function showCard() {
+  const b = store.best;
+  $('#app').innerHTML = `<div class="top"><button class="back" onclick="home()">← Кроки</button><h2>Картка результату</h2></div>
+  <div class="rcard"><div class="cnt">Квадрат двочлена · 7 клас · алгебра</div><div class="big">${esc(store.name)}, ${esc(store.cls)}</div>
+  <p>Кроки 0–4: <b>пройдено ✔</b><br>Перевір себе: <b>${b.score} з 8</b> — оцінка <b>${b.grade}</b><br>Найкраща спроба № ${b.n} · ${when(b.at)}<br>Усього спроб: ${store.attempts}</p>
+  <p>Код перевірки: <span class="code">${mkCode(b)}</span></p></div>
+  <p class="lead">📸 Зроби скріншот цієї картки і надішли вчителю.</p>`;
+}
+function teacher() {
+  $('#app').innerHTML = `<a class="back" href="#">← До тренажера</a><h1>Для вчителя: перевірка коду</h1><p class="lead">Квадрат двочлена. Введи ім’я, клас і код зі скріншота учня — сторінка покаже, чи код справжній.</p>
+  <div class="card"><label class="fld">Прізвище та ім’я<input id="tn" class="inp"></label><label class="fld">Клас<input id="tc" class="inp"></label><label class="fld">Код<input id="tk" class="inp" autocomplete="off"></label>
+  <button class="go" onclick="verify()">Перевірити</button><div id="fb"></div></div>`;
+}
+function verify() {
+  const [at, sn, h] = $('#tk').value.trim().toLowerCase().split('-');
+  const ok = at && sn && h && sign($('#tn').value, $('#tc').value, at + '-' + sn) === h;
+  if (!ok) return warn('❌ Код не збігається з цим іменем і класом. Перевір, чи правильно переписано ім’я, клас і код.');
+  const score = +sn[0];
+  $('#fb').innerHTML = `<div class="good">✅ Код справжній</div><p>Перевір себе: <b>${score} з 8</b> — оцінка <b>${gradeOf(score)}</b><br>Спроба № ${parseInt(sn.slice(1), 36)} · ${when(parseInt(at, 36))}</p>`;
+}
+window.addEventListener('hashchange', home);
+home();
+</script></body></html>
