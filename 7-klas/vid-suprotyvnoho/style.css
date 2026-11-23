@@ -1,0 +1,80 @@
+:root{--bg:#fbfaf6;--card:#fff;--ink:#1f2340;--muted:#4b5065;--acc:#3730a3;--accs:#e8e7ff;--line:#c9cddc;--ok:#15803d;--okbg:#e7f6ec;--bad:#b91c1c;--badbg:#fdecec;--hint:#fff6db}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:18px/1.5 "Segoe UI",Roboto,Arial,sans-serif}
+#app{max-width:860px;margin:0 auto;padding:16px}
+h1{font-size:1.6em;margin:.3em 0}h2{font-size:1.3em;margin:.2em 0}
+.lead,.muted{color:var(--muted)}.small{font-size:17px;color:var(--muted)}
+a{color:var(--acc)}
+button{font:inherit;min-height:44px;border:2px solid var(--line);border-radius:10px;padding:.45em .9em;background:#fff;color:var(--ink);cursor:pointer;text-align:left}
+button:hover{border-color:var(--acc)}
+button:focus-visible,input:focus-visible,textarea:focus-visible,a:focus-visible{outline:3px solid #b45309;outline-offset:2px}
+button:disabled{opacity:.55;cursor:default}button:disabled:hover{border-color:var(--line)}
+.go{background:var(--acc);border-color:var(--acc);color:#fff;font-weight:700}
+.back{border:0;background:transparent;color:var(--acc);font-weight:700;padding-left:0;text-decoration:none;display:inline-flex;align-items:center;min-height:44px}
+.btns{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;margin-top:12px}
+.q{font-size:1.15em;margin:.2em 0 .6em}
+.steps{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px;margin-top:12px}
+.step{display:flex;flex-direction:column;gap:2px;padding:12px 14px}
+.step .st{font-size:17px;color:var(--muted)}.step .st.ok{color:var(--ok);font-weight:700}
+.pills{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0}.pills button{min-width:44px;text-align:center;font-weight:700;padding:.3em .6em}
+.pills .on{border-color:var(--acc);border-width:3px}.pills .ok{background:var(--okbg);color:var(--ok);border-color:var(--ok)}
+.opts{display:grid;gap:8px}.opts button{padding:.6em .9em}
+.good{color:var(--ok);font-weight:700;margin:.6em 0}
+.bad{color:var(--bad);background:var(--badbg);border-radius:8px;padding:.4em .7em;margin:.6em 0}
+.hint{background:var(--hint);border-radius:8px;padding:.4em .7em;margin:.5em 0}
+.sol{background:var(--okbg);border-radius:8px;padding:.5em .8em;margin:.5em 0}
+details{border:1px solid var(--line);border-radius:10px;padding:.3em .8em;margin-top:14px;background:#fff}summary{cursor:pointer;font-weight:700;min-height:44px;display:flex;align-items:center}
+
+/* Алгоритм-блок-схема */
+.algo{border:1px solid var(--line);border-radius:12px;background:#fff;padding:8px;margin:10px 0}
+.algo .row{display:flex;flex-direction:column;align-items:stretch;gap:2px}
+.algo .blk{width:100%;padding:.35em .7em;font-weight:700}
+.algo .blk small{display:block;font-weight:400;font-size:17px;color:var(--muted)}
+.algo .blk.on{border-color:var(--acc);border-width:3px;background:var(--accs)}
+.algo .arr{text-align:center;color:var(--muted);line-height:1}.algo .arr .h{display:none}
+.algo .bar{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.algo .fold{border:0;color:var(--acc);font-weight:700;padding:0 .3em}
+.algo .memo{background:var(--accs);border-radius:8px;padding:.4em .7em;margin-top:6px}
+.algo .line1{font-weight:700}.algo .line1 .on{color:var(--acc);text-decoration:underline}
+@media (min-width:760px){.algo .row{flex-direction:row;align-items:stretch}.algo .blk{flex:1}.algo .arr{align-self:center}.algo .arr .v{display:none}.algo .arr .h{display:inline}}
+
+/* Малюнки */
+.fig{width:100%;max-width:460px;height:auto;display:block;margin:6px auto;background:#fff;border:1px solid var(--line);border-radius:10px}
+.fig.sm{max-width:340px}
+.fig line,.fig path.ln{stroke:var(--ink);stroke-width:3;stroke-linecap:round;fill:none}
+.fig .acc{stroke:var(--acc)}.fig .red{stroke:var(--bad)}
+.fig text{font:italic 700 24px Georgia,"Times New Roman",serif;fill:var(--ink)}
+.fig text.n{font:700 20px Arial,sans-serif;font-style:normal}.fig text.r{fill:var(--bad)}
+.fig circle{fill:var(--ink)}
+input[type=range]{width:100%;height:44px;accent-color:var(--acc)}
+.redmsg{color:var(--bad);font-weight:700;border:2px solid var(--bad);border-radius:8px;padding:.5em .7em;margin:.6em 0;background:#fff}
+
+/* Крок 1: міркування по рядку */
+.chain{margin:.5em 0;padding-left:0;list-style:none}.chain li{border-left:4px solid var(--line);padding:.2em .6em;margin:.3em 0}
+.chain li b{color:var(--acc)}.chain li.hl{border-left-color:var(--bad);background:var(--badbg);font-weight:700}
+
+/* Крок 5: збери доведення */
+.given{margin:.2em 0}.pool{display:grid;gap:6px;min-height:52px;border:2px dashed var(--line);border-radius:10px;padding:6px;margin:6px 0}
+.pool button,.slot{width:100%}
+.pool button.sel{border-color:var(--acc);border-width:3px;background:var(--accs)}
+.scheme{display:grid;gap:8px}.scheme .blkname{font-weight:700;margin-top:4px}
+.slot{border-style:dashed;color:var(--muted)}.slot.full{border-style:solid;color:var(--ink)}
+.slot.right,.pool button.right{border-color:var(--ok);background:var(--okbg)}.slot.wrong,.pool button.wrong{border-color:var(--bad);background:var(--badbg)}
+.why{color:var(--bad);font-size:17px;margin:2px 0 6px}
+@media (min-width:760px){.build{display:grid;grid-template-columns:1fr 1fr;gap:14px}}
+
+/* Крок 6: пропуски */
+.pline{margin:.6em 0}.gap{display:inline-block;min-width:5em;border-bottom:2px solid var(--acc);font-weight:700;color:var(--acc);padding:0 .2em}
+.gap.wrong{border-color:var(--bad);color:var(--bad)}.gap.right{border-color:var(--ok);color:var(--ok)}
+.gopts{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0}.gopts button.sel{border-color:var(--acc);border-width:3px;background:var(--accs)}
+
+/* Крок 7 */
+textarea{width:100%;min-height:72px;font:inherit;border:2px solid var(--line);border-radius:10px;padding:.4em .6em}
+label.fld{display:block;font-weight:700;margin:8px 0}
+.cmp{display:grid;gap:12px}@media (min-width:760px){.cmp{grid-template-columns:1fr 1fr}}
+input.inp{width:100%;font:inherit;font-size:1.1em;border:2px solid var(--line);border-radius:10px;padding:.4em .6em;min-height:44px}
+
+/* Результат */
+.result{border:3px solid var(--acc);border-radius:12px;padding:14px;background:#fff}.result .big{font-size:1.6em;font-weight:800}
+.result ul{padding-left:1.2em}
