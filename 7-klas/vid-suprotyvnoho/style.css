@@ -78,3 +78,4 @@ input.inp{width:100%;font:inherit;font-size:1.1em;border:2px solid var(--line);b
 /* Результат */
 .result{border:3px solid var(--acc);border-radius:12px;padding:14px;background:#fff}.result .big{font-size:1.6em;font-weight:800}
 .result ul{padding-left:1.2em}
+.code{font:700 1.2em ui-monospace,monospace;letter-spacing:.05em;white-space:nowrap;background:var(--accs);border-radius:8px;padding:.1em .4em}

@@ -5,10 +5,19 @@ const shuffle = a => { a = [...a]; for (let i = a.length - 1; i > 0; i--) { cons
 
 // ===== Прогрес =====
 const KEY = 'geo7-vid-suprotyvnoho';
-const fresh = () => ({ done: {}, s0: false, name: '', test: null, fold: false });
+const fresh = () => ({ done: {}, s0: false, name: '', cls: '', attempts: 0, test: null, fold: false });
 let store = fresh();
 try { Object.assign(store, JSON.parse(localStorage.getItem(KEY) || '{}')); } catch (e) {}
 function save() { try { localStorage.setItem(KEY, JSON.stringify(store)); } catch (e) {} }
+if (store.test && !store.test.n) store.test.n = 1;   // результати, збережені до появи коду
+
+// ===== Код перевірки для вчителя (як у «Паралельних прямих») =====
+const SALT = 'geo7-vid-suprotyvnoho-2026';
+const norm = s => s.trim().toLowerCase().replace(/\s+/g, ' ');
+function h32(s) { let h = 2166136261; for (const c of s) { h ^= c.codePointAt(0); h = Math.imul(h, 16777619) >>> 0; } return h; }
+const sign = (name, cls, p) => (h32(norm(name) + '|' + norm(cls) + '|' + p + SALT) % 1679616).toString(36).padStart(4, '0');
+function mkCode(r) { const p = Math.floor(r.at / 60000).toString(36).padStart(6, '0') + '-' + r.score + r.n.toString(36).padStart(2, '0'); return (p + '-' + sign(store.name, store.cls, p)).toUpperCase(); }
+const when = ms => new Date(ms).toLocaleString('uk-UA', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
 
 const STEPS = [
   { title: 'Пам’ятка', sub: '6 карток' },
@@ -60,6 +69,7 @@ let cur = null, test = null;
 const header = k => `<button class="back" onclick="home()">← Усі кроки</button><h2>${k}. ${STEPS[k].title}</h2>${algo()}`;
 function home() {
   cur = null; active = 0; memo = -1;
+  if (location.hash === '#vchytel') return teacher();
   $('#app').innerHTML = `<a class="back" href="../../">← Меню 7 класу</a><h1>Доведення від супротивного</h1>
   <p class="lead">7 клас · геометрія · Бевз, § 7–9. Проходь кроки по черзі: наступний відкривається, коли виконано всі завдання попереднього.</p>
   <div class="steps">${STEPS.map((s, k) => {
@@ -67,7 +77,7 @@ function home() {
     return `<button class="step" ${lock ? 'disabled' : ''} onclick="openStep(${k})"><b>${k}. ${s.title}</b><span class="small">${s.sub}</span><span class="st ${c ? 'ok' : ''}">${c ? 'пройдено' : lock ? 'закрито' : prog}</span></button>`;
   }).join('')}</div>
   ${store.test ? '<div class="btns"><button onclick="result()">Мій результат «Перевір себе»</button></div>' : ''}
-  <details><summary>Для вчителя</summary><ul><li>Орієнтовний час: 25–30 хв.</li><li><b>ДЗ:</b> пройти кроки 1–6 і надіслати скріншот екрана «Перевір себе». Крок 7 — за бажанням.</li><li>На наступному уроці розібрати № 331 (крок 7.1) біля дошки.</li></ul></details>
+  <details><summary>Для вчителя</summary><ul><li>Орієнтовний час: 25–30 хв.</li><li><b>ДЗ:</b> пройти кроки 1–6 і надіслати скріншот екрана «Перевір себе». Крок 7 — за бажанням.</li><li>На наступному уроці розібрати № 331 (крок 7.1) біля дошки.</li></ul><p><a href="#vchytel">Перевірити код учня зі скріншота</a></p></details>
   <div class="btns"><button onclick="restart()">Почати спочатку</button></div>
   <p class="small">Прогрес зберігається лише на цьому пристрої.</p>`;
 }
@@ -326,14 +336,34 @@ function testNext() {
   showTask(t);
 }
 function testAnswer(ok) { test.res.push(ok); testNext(); }
-function testEnd() { store.test = { score: test.res.filter(Boolean).length, at: Date.now() }; save(); result(); }
+function testEnd() { store.test = { score: test.res.filter(Boolean).length, at: Date.now(), n: ++store.attempts }; save(); result(); }
 function result() {
-  const r = store.test, when = new Date(r.at).toLocaleString('uk-UA', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+  const r = store.test;
   $('#app').innerHTML = `<button class="back" onclick="home()">← Усі кроки</button><h2>Перевір себе — результат</h2>
-  <div class="result"><label class="fld" for="nm">Прізвище, ім’я</label><input id="nm" class="inp" value="${esc(store.name)}" oninput="store.name = this.value; save()" autocomplete="name">
-  <p class="big">${r.score} з 8</p><p>${when}</p>
-  <ul>${[1, 2, 3, 4, 5, 6, 7].map(k => `<li>${k}. ${STEPS[k].title} — ${complete(k) ? '<b>пройдено</b>' : 'не пройдено'}</li>`).join('')}</ul></div>
+  <div class="result"><label class="fld" for="nm">Прізвище, ім’я</label><input id="nm" class="inp" value="${esc(store.name)}" oninput="store.name = this.value; save(); showCode()" autocomplete="name">
+  <label class="fld" for="cl">Клас</label><input id="cl" class="inp" value="${esc(store.cls)}" oninput="store.cls = this.value; save(); showCode()" placeholder="Наприклад: 7-А">
+  <p class="big">${r.score} з 8</p><p>${when(r.at)} · спроба № ${r.n}</p>
+  <ul>${[1, 2, 3, 4, 5, 6, 7].map(k => `<li>${k}. ${STEPS[k].title} — ${complete(k) ? '<b>пройдено</b>' : 'не пройдено'}</li>`).join('')}</ul><p>Код перевірки: <span class="code" id="code"></span></p></div>
   <p><b>Зроби скріншот цього екрана й надішли вчителю.</b></p>
   <div class="btns"><button class="go" onclick="startTest()">Пройти ще раз</button><button onclick="restart()">Почати спочатку</button></div>`;
+  showCode();
 }
+function showCode() {
+  const ready = store.name.trim() && store.cls.trim(), el = $('#code');
+  el.className = ready ? 'code' : 'small';
+  el.textContent = ready ? mkCode(store.test) : 'з’явиться, коли впишеш ім’я та клас';
+}
+
+// Сторінка для вчителя: перевірка коду зі скріншота
+function teacher() {
+  $('#app').innerHTML = `<a class="back" href="#">← До тренажера</a><h1>Для вчителя: перевірка коду</h1><p class="lead">Доведення від супротивного. Введи ім’я, клас і код зі скріншота учня — сторінка покаже, чи код справжній.</p>
+  <div class="card"><label class="fld" for="tn">Прізвище, ім’я</label><input id="tn" class="inp"><label class="fld" for="tc">Клас</label><input id="tc" class="inp"><label class="fld" for="tk">Код</label><input id="tk" class="inp" autocomplete="off">
+  <div class="btns"><button class="go" onclick="verify()">Перевірити</button></div><div id="fb" aria-live="polite"></div></div>`;
+}
+function verify() {
+  const [at, sn, h] = $('#tk').value.trim().toLowerCase().split('-');
+  if (!(at && sn && h && sign($('#tn').value, $('#tc').value, at + '-' + sn) === h)) return warn('Код не збігається з цим іменем і класом. Перевір, чи правильно переписано ім’я, клас і код.');
+  fb(`<div class="good">Код справжній</div><p>Перевір себе: <b>${sn[0]} з 8</b><br>Спроба № ${parseInt(sn.slice(1), 36)} · ${when(parseInt(at, 36) * 60000)}</p>`);
+}
+window.addEventListener('hashchange', home);
 home();
